@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>とりあえず書いておく。。。 </title>
+</head>
+<body>
+<pre>
+とりあえず書いておく。。。
+製品完成後は、ちゃんとしたモノをかくように ＞ 担当の方
+
+管理者マニュアル
+
+=============================== 前提条件 ===============================
+CentOS6以上であること
+
+=============================== セットアップ手順 ===============================
+(1) 必要なソフトウェアをインストールする
+yum install httpd
+yum install postgresql-server
+yum install mod_wsgi
+yum install python-paramiko
+yum install python-paste
+yum install python-webob
+yum install python-psycopg2
+yum install python-jinja2
+yum install python-sqlalchemy
+
+(2) webベースでの接続先を設定する
+vi /etc/httpd/conf.d/jvn.conf
++---------------------------------------------+
+Alias /jvn/ "/var/www/jvn/"
+<Directory "/var/www/jvn">
+  Order deny,allow
+  Allow from all
+</Directory>
++---------------------------------------------+
+
+(3) wsgiのセットアップを行う。
+vi /etc/httpd/conf.d/wsgi.conf
++---------------------------------------------+
+LoadModule wsgi_module modules/mod_wsgi.so
+WSGIScriptAlias /vms /var/www/jvn/wsgi_handler.py
+WSGIPythonPath  /var/www/jvn
++---------------------------------------------+
+
+(4) 下記URLよりgitlabから必要なアプリケーションをインストールする
+cd /var/www
+git clone git@github.com:hidekuno/jvn jvn
+
+(5) アプリケーション設定
+cd /var/www/jvn
+chgrp apache logs
+chgrp apache tmp
+
+
+(6) DBの初期化
+/etc/init.d/postgresql initdb
+vi /var/lib/pgsql/data/pg_hba.conf
++----------------------------------------------------------------+
+host    all         all         127.0.0.1/32          password
++----------------------------------------------------------------+
+
+su - postgres
+psql
+
+create user kunohi;
+create database kunohi_db owner kunohi;
+alter role kunohi with password 'kunohi';
+
+(7) データ投入
+cd /var/www/jvn
+zcat jvn_dump.sql.gz | psql -h 127.0.0.1 -U kunohi kunohi_db
+
+
+=========================== 不整合データ調査 メンテナンス ===============================
+1. 調査(下記のSQLを実行する)
++-------------------------------------------------------------------------------------+
+select p.pid, p.pname,p.vid,v.vname,v.vid from jvn_product p
+INNER JOIN jvn_vulnerability_detail d ON p.fs_manage = 'undefine' AND p.cpe = d.cpe
+LEFT JOIN jvn_vendor v ON v.vid = p.vid;
++-------------------------------------------------------------------------------------+
+
+2. メンテナンス(下記のSQLを実行する)
++-------------------------------------------------------------------------------------+
+begin;
+update jvn_product p set fs_manage='not_cover_item'
+WHERE p.fs_manage = 'undefine'
+AND   EXISTS (select 1 from jvn_vulnerability_detail d where d.cpe = p.cpe)
+AND   NOT EXISTS (select 1 from jvn_vendor v WHERE v.vid = p.vid);
+commit;
++-------------------------------------------------------------------------------------+
+
+ユーザーマニュアル
+製品完成後、後日記載する予定。
+</pre>
+</body>
+</html>

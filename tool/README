@@ -1,0 +1,5 @@
+cat list.sql | psql  -h 127.0.0.1 kunohi_db -t | sed -e 's/^ //' -e '/^[ ]*$/d'| sort -u | ./tree .py
+or
+scl enable devtoolset-2 bash
+g++ --std=c++11 tree.cpp -o tree
+cat list.sql | psql  -h 127.0.0.1 kunohi_db -t | sed -e 's/^ //' -e '/^[ ]*$/d'| sort -u | ./tree

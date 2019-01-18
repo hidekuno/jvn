@@ -1,0 +1,88 @@
+{#
+ # JVN Vulnerability Infomation Managed System
+ #
+ # hidekuno@gmail.com
+ #
+ #}
+{% include 'template/jvn_header.html' %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="main">
+          <h1 class="page-header">JVN アカウント 編集</h1>
+          <div class="form-account">
+
+            <form role="form" id="form-account-execute" method="post" action="{{app.topuri}}/jvn_account/execute">
+            <strong>ユーザーID</strong>
+            <input type="text" id="jvn_user_id" name="user_id"  value="{{app.ui.user_id}}" class="form-control account_text" {{app.readonly}} required autofocus>
+            <strong>パスワード</strong>
+            <input type="password" id="jvn_passwd" name="passwd" value="{{app.ui.passwd}}" class="form-control account_text" required>
+            <strong>氏名</strong>
+            <input type="text" id="jvn_user_name" name="user_name" value="{{app.ui.user_name}}" class="form-control account_text" required>
+            <strong>メールアドレス</strong>
+            <input type="text" id="jvn_email" name="email" value="{{app.ui.email}}" class="form-control account_text" required>
+            <strong>所属組織</strong>
+            <input type="text" id="jvn_department" name="department" value="{{app.ui.department}}" class="form-control account_text" required>
+            <strong>操作権限</strong><br>
+            <label type="radio-inline"><input type="radio" name="privs" id="privs" value="admin" {{app.admin}}>admin　　　</label>
+            <label type="radio-inline"><input type="radio" name="privs" id="privs" value="user" {{app.user}}>user</label>
+            <input type="hidden" name="method" value="{{app.method}}" />
+            <br>
+            <button class="btn btn-lg btn-primary jvn-search" id="account_execute_btn" type="button" data-toggle="modal" data-target="#dialog-confirm" data-whatever="#form-account-execute">
+            <span class="glyphicon glyphicon-pencil"></span>実行</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'template/jvn_dialog.html' %}
+    <script type='text/javascript'>
+      var messages = {'regist':'登録', 'modify':'変更'};
+      var msg = messages[location.pathname.split("/").slice(-1)];
+      var form_id = "";
+
+      $('#account_execute_btn').click( function() {
+        $('#modal-title').text('アカウント情報' + msg);
+        $('#dialog-confirm-msg').text('以下アカウント情報を'+ msg + 'します。');
+        $('#dialog-confirm-data').text('アカウント情報ID: ' + $('#jvn_user_id').val());
+        $('#dialog-keyword').prop('placeholder','edit');
+      });
+      $(function() {
+        $('#dialog-confirm').modal({
+          backdrop: 'static',
+          show    : false,
+          keyboard: false
+        });
+
+        $('#dialog-confirm').on('show.bs.modal', function(event) {
+          form_id = $(event.relatedTarget).data('whatever');
+        });
+
+        $('#dialog-confirm-btn').on('click.check', function() {
+          if ($('#dialog-keyword').val() == '') {
+             $('#dialog-error').html('<br />キーワードは必須入力です。').removeClass('hide');
+             return;
+          } else if ($('#dialog-keyword').val() != $('#dialog-keyword').attr('placeholder')) {
+              $('#dialog-error').html('<br />キーワードを正しく入力して下さい。').removeClass('hide');
+             return;
+          } else {
+              $('#dialog-error').addClass('hide');
+          }
+          $(form_id).submit();
+          $('#dialog-confirm').modal('hide');
+        });
+
+        $('#dialog-close').on('click', function() {
+          $('#dialog-confirm-error').addClass('hide');
+        });
+
+        $('#dialog-confirm-btn-cancel').on('click', function() {
+          $('#dialog-confirm-error').addClass('hide');
+        });
+      });
+    </script>
+    {% if app.error_message != '' %}
+        <center><h4 style="color:red">{{ app.error_message }}</h4></center>
+    {% endif %}
+{% include 'template/jvn_footer.html' %}

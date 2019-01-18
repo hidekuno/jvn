@@ -1,0 +1,51 @@
+---
+postgres:
+  image: postgres:jvn
+  expose:
+    - 5432
+  ports:
+    - 15432:5432
+  restart: always
+  volumes:
+    - ./:/var/jvn
+  environment:
+    - "TZ=Japan"
+
+plt:
+  build: .
+  command: /usr/bin/python3.6 /var/local/jvn_plt_server.py
+  dockerfile: docker/python3/Dockerfile
+  expose:
+    - 8003
+  ports:
+    - 8003:8003
+  restart: always
+  links:
+    - postgres
+  volumes:
+    - ./:/var/local
+  stdin_open: true
+  privileged: true
+  environment:
+    - "TZ=Japan"
+  container_name: plt
+
+web:
+  build: .
+  command: /usr/sbin/httpd -DFOREGROUND
+  dockerfile: docker/httpd/Dockerfile
+  expose:
+    - 80
+  ports:
+    - 8002:80
+  restart: always
+  links:
+    - postgres
+    - plt
+  volumes:
+    - ./:/var/www/jvn/
+  stdin_open: true
+  privileged: true
+  environment:
+    - "TZ=Japan"
+  container_name: web
