@@ -1,0 +1,44 @@
+{#
+ # JVN Vulnerability Infomation Managed System
+ #
+ # hidekuno@gmail.com
+ #
+ #}
+
+{% include 'template/jvn_header.html' %}
+    <div class="container-fluid">
+      <div class="row">
+        <div class="main">
+          <h1 class="page-header">JVN ベンダー製品情報 メンテナンス完了</h1>
+          <center><h4 style="color:blue">以下製品をメンテナンスしました。</h4></center>
+          <div class="table-responsive">
+            <table class="table table-striped">
+
+              <thead>
+                <tr>
+                  <th>FS取扱い</th>
+                  <th>ベンダー名</th>
+                  <th>製品名</th>
+                  <th>cpe(/{種別}:{ベンダ名}:{製品名}:{バージョン}:{アップデート}:{エディション}:{言語})</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for item in app.result %}
+                <tr>
+                  <td>{{item[0]}}</td>
+                  <td>{{item[1]}}</td>
+                  <td>{{item[2]}}</td>
+                  <td>{{item[3]}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if app.error_message != '' %}
+        <center><h4 style="color:red">{{ app.error_message }}</h4></center>
+    {% endif %}
+{% include 'template/jvn_footer.html' %}

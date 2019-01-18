@@ -1,0 +1,175 @@
+/*
+ *  JVN Vulnerability Infomation Managed System
+ *
+ *  hidekuno@gmail.com
+*/
+
+/* 
+ * navbar(デフォルト 50px)のため調整する (今回は35px)
+ */
+body {
+  padding-top: 35px;
+}
+
+/*
+ * これはサンプルを流用
+ */
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+
+/*
+ * Sidebar(これはサンプルを流用)
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+
+
+/*
+ * Main content(これはサンプルを流用)
+ */
+.main {
+  padding: 10px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0px;
+}
+
+
+/*
+ * Placeholder dashboard ideas(これはサンプルを流用)
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0px;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+/*
+ * Placeholder dashboard ideas(これはサンプルを流用)
+ */
+.form-back {
+  position: relative;
+  height: auto;
+  margin-top: 1px;
+  padding-top: 1px;
+  padding-bottom: 12px;
+}
+
+.form-search {
+  max-width: 800px;
+  padding-bottom: 50px;
+  margin: 0 auto;
+}
+
+.form-search .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 5px;
+  font-size: 14px;
+}
+.form-search .form-control:focus {
+  z-index: 2;
+}
+.form-search input {
+  margin-bottom: 5px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.radio {
+   padding-left: 10px;
+}
+.jvn-search {
+   float: right;
+   padding-top: 2px;
+   padding-bottom: 2px;
+   font-size: 14px;
+}
+.footer {
+  position: fixed !important;
+  position:      absolute;
+  bottom:        0;
+  left:          0;
+  width:         100%;
+  height:        30px;
+  color:         #777;
+  border-top:    1px solid #c5c5c5;
+}
+.account_text {
+  margin-bottom: 10px;
+}
+.form-account {
+  max-width: 300px;
+  padding-bottom: 50px;
+  margin: 0 auto;
+}
+.theme-dropdown .dropdown-menu {
+  position: static;
+  display: block;
+  margin-bottom: 20px;
+}
+/*********************************************************************
+ * 一覧表テーブルの微調整を行った。
+ *********************************************************************/
+.jvn_list_img_button {
+  padding: 3px 4px;
+  font-size: 11px;
+}
+td, .table tbody > tr > td, .table tfoot > tr > td {
+  padding-top: 5px;
+  padding-bottom: 4px;
+  vertical-align: middle;
+}
+
+/*********************************************************************
+ * メニューバーの微調整を行った。
+ *********************************************************************/
+.navbar {
+  min-height: 35px
+}
+.navbar-brand {
+  padding-top: 10px;
+  height:      35px
+}
+.jvn_menu_item {
+  bottom: 5px;
+  height: 30px
+}
+.jvn-dropdown-menu {
+  background-color: #222;
+  border-color: #080808;
+}
+.jvn-dropdown-menu > li > a {
+  color: #aaa;
+}
+.dropdown-menu .jvn-divider {
+  background-color: #050505;
+}
+.jvn-edit-menu > li > a:hover,
+.jvn-edit-menu > li > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}

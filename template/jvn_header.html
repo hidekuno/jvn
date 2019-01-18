@@ -1,0 +1,85 @@
+{#
+ # JVN Vulnerability Infomation Managed System
+ #
+ # hidekuno@gmail.com
+ #
+ #}
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="token" content="{{app.web_token}}">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>ISMS脆弱性情報管理システム</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/jvn/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/jvn/dist/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/jvn/jvn.css" rel="stylesheet">
+    <link href="/jvn/jquery.datetimepicker.css" rel="stylesheet">
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="/jvn/dist/js/bootstrap.min.js"></script>
+    <script src="/jvn/dist/js/bootbox.js"></script>
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a id="jvn_list" class="navbar-brand jvn_menu_btn" href="#">
+            <span class="glyphicon glyphicon-home"></span>　ISMS Vulnerability Infomation Managed System</a>
+        </div>
+
+	{% if app.exception is none %}
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            {% if app.login_user.privs == 'admin' %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-filter"></span>集計結果<b class="caret"></b></a>
+              <ul class="dropdown-menu jvn-dropdown-menu">
+                <li><a id="jvn_product_summary" class="jvn_menu_btn" href="#">製品別脆弱性件数</a></li>
+                <li class="divider jvn-divider"></li>
+                <li><a id="jvn_vendor_summary" class="jvn_menu_btn" href="#">ベンダ別脆弱性件数</a></li>
+                <li class="divider jvn-divider"></li>
+                <li><a id="jvn_barchart" class="jvn_menu_btn" href="#">発生件数(棒グラフ)</a></li>
+                <li class="divider jvn-divider"></li>
+                <li><a id="jvn_linechart" class="jvn_menu_btn" href="#">発生件数(折れ線グラフ)</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-search"></span>製品検索<b class="caret"></b></a>
+              <ul class="dropdown-menu jvn-dropdown-menu">
+                <li><a id="jvn_maintenance_search" class="jvn_menu_btn" href="#">メンテナンス未実施製品検索</a></li>
+                <li class="divider jvn-divider"></li>
+                <li><a id="jvn_search" class="jvn_menu_btn" href="#">ベンダ製品検索</a></li>
+                <li class="divider jvn-divider"></li>
+                <li><a id="jvn_title_search" class="jvn_menu_btn" href="#">脆弱性タイトル検索</a></li>
+              </ul>
+            </li>
+            <li><a id="jvn_develop" class="jvn_menu_item jvn_menu_btn" href="#"><span class="glyphicon glyphicon-wrench"></span> 依頼チェック </a></li>
+            <li><a id="jvn_account" class="jvn_menu_item jvn_menu_btn" href="#"><span class="glyphicon glyphicon-user"></span>アカウント管理</a></li>
+            {% endif %}
+            <li><a class="jvn_menu_item" href="{{app.topuri}}/jvn_logout"><span class="glyphicon glyphicon-off"></span>ログアウト</a></li>
+            <li><a class="jvn_menu_item" href="/jvn/jvn_document.html"><span class="glyphicon glyphicon-book"></span>ヘルプ</a></li>
+          </ul>
+        </div>
+      {% endif %}
+      </div>
+    </div>
+    <form id="headerForm" method="post">
+        <input type="hidden" id="topuri" value="{{app.topuri}}" />
+    </form>
