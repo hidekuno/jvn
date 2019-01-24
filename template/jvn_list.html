@@ -12,10 +12,11 @@
 
           <form method="post" class="form-inline" role="form" action="{{app.topuri}}/jvn_list/search" autocomplete="off">
             <div class="form-group">
-            <input type="text" value="{{ app.ui.dp_from }}" class="span2 form-control" placeholder="更新日付:(From)" name="dp_from" id="dp_from" required>
+            <input type="text" id="keyword_txt" name="keyword"  value="{{app.ui.keyword}}" style="width: 400px;" class="form-control"  placeholder="キーワード...">
+            <input type="text" value="{{ app.ui.dp_from }}" class="span2 form-control" placeholder="更新日付:(From)" name="dp_from" id="dp_from">
             </div>
             ～
-            <input type="text" value="{{ app.ui.dp_to }}" class="span2 form-control" placeholder="更新日付:(To)" name="dp_to" id="dp_to" required>
+            <input type="text" value="{{ app.ui.dp_to }}" class="span2 form-control" placeholder="更新日付:(To)" name="dp_to" id="dp_to">
             <button class="btn btn-sm btn-primary" id="vul_search_btn" type="submit">
               <span class="glyphicon glyphicon-search"></span>検索</button>
           </form>
