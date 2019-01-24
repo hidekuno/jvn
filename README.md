@@ -6,11 +6,10 @@ PythonによるWebアプリケーションのdemo
 https://jvndb.jvn.jp/
 
 ## 完成度合い
-- そこそこ
-- そもそもあまり役に立たない(学習のためなので)
+- そこそこ(学習のためなので)
 
 - 一覧画面
-![image](https://user-images.githubusercontent.com/22115777/47280336-dec3e100-d610-11e8-8b86-3c86231b225a.png)
+![image](https://user-images.githubusercontent.com/22115777/51661182-6d227700-1ff3-11e9-8706-0e0c7e13f1bd.png)
 - 集計画面
 ![image](https://user-images.githubusercontent.com/4899700/47139528-fb050c80-d2f6-11e8-8427-eeb267a43f9f.png)
 - グラフ画面
