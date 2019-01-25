@@ -9,7 +9,7 @@ import os
 import jvn_pagination
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
-
+from wsgi_handler import make_like
 ################################################################################
 # DAO(データアクセスオブジェクト)
 ################################################################################
@@ -17,9 +17,6 @@ class JvnDAO(object):
 
     def __init__(self, app):
         self.app = app
-
-    def make_like(self,word):
-        return '%' + word.replace(' ', '%') + '%'
 
     def get_fs_manage(self):
         if  self.app.cover_item == 'checked':
@@ -35,8 +32,8 @@ class JvnDAO(object):
 
         sql_count = """select count(*) as c from jvn_vendor a, jvn_product b
                       where (a.vid = b.vid ) and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s)"""
-        self.app.cursor.execute(sql_count,(self.make_like(self.app.ui.vendor)
-                                          ,self.make_like(self.app.ui.product)
+        self.app.cursor.execute(sql_count,(make_like(self.app.ui.vendor)
+                                          ,make_like(self.app.ui.product)
                                           ,self.get_fs_manage()))
         count = self.app.cursor.fetchone()
         return count[0]
@@ -48,8 +45,8 @@ class JvnDAO(object):
                     where (a.vid = b.vid ) and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s) 
                     order by b.vid, b.pid limit %s OFFSET %s"""
 
-        self.app.cursor.execute(sqlfmt,(self.make_like(self.app.ui.vendor)
-                                        ,self.make_like(self.app.ui.product)
+        self.app.cursor.execute(sqlfmt,(make_like(self.app.ui.vendor)
+                                        ,make_like(self.app.ui.product)
                                         ,self.get_fs_manage()
                                         ,PAGE_COUNT
                                         ,offset * PAGE_COUNT,))
@@ -63,8 +60,8 @@ class JvnDAO(object):
                     where (a.vid = b.vid ) 
                     and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s)"""
 
-        self.app.cursor.execute(sqlfmt,(self.make_like(jvn_state.vendor)
-                                       ,self.make_like(jvn_state.product)
+        self.app.cursor.execute(sqlfmt,(make_like(jvn_state.vendor)
+                                       ,make_like(jvn_state.product)
                                        ,jvn_state.fs_manage))
 
         rows = self.app.cursor.fetchall()
