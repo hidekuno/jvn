@@ -10,6 +10,7 @@ import jvn_pagination
 import logging
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
+from wsgi_handler import make_like
 ################################################################################
 # DAO(データアクセスオブジェクト)
 ################################################################################
@@ -31,17 +32,8 @@ class JvnDAO(object):
         sql_count = """select count(*) from jvn_vulnerability a
                        where exists (select 1 from jvn_vulnerability_detail b, jvn_product c
                                      where a.identifier = b.identifier and b.cpe = c.cpe)"""
-        params = list()
-        if self.keyword != '' :
-            params.append(self.make_like(self.keyword))
-            sql_count = sql_count + """ and title ilike %s """
 
-        if self.dp_from != '' and self.dp_to != '':
-            params.append(self.dp_from)
-            params.append(self.dp_to)
-            sql_count = sql_count + """ and %s <= modified_date and modified_date <= %s"""
-
-        logging.debug(sql_count)
+        params, sql_count = self.make_sql_params(sql_count)
         self.app.cursor.execute(sql_count, tuple(params))
         count = self.app.cursor.fetchone()
         return count[0]
@@ -62,32 +54,30 @@ class JvnDAO(object):
                       from     jvn_vulnerability a, jvn_vulnerability_detail b, jvn_product c
                       where    a.identifier = b.identifier
                       and      b.cpe = c.cpe) as mail_query"""
- 
-        sql_where = """where true """
-
         sql_gr = """group by identifier, modified_date, issued_date
                     order by modified_date desc limit %s OFFSET %s;"""
 
-        params = list()
-        if self.keyword != '' :
-            params.append(self.make_like(self.keyword))
-            sql_where = sql_where + """ and title ilike %s """
-
-        if self.dp_from != '' and self.dp_to != '':
-            params.append(self.dp_from)
-            params.append(self.dp_to)
-            sql_where = sql_where + """ and %s <= modified_date and modified_date <= %s """
-
+        params, sql_where = self.make_sql_params("""where true """)
         params.append(PAGE_COUNT)
         params.append(offset * PAGE_COUNT)
 
-        logging.debug(sql_main + ' ' + sql_where + ' ' + sql_gr)
         self.app.cursor.execute(sql_main + ' ' + sql_where + ' ' + sql_gr, tuple(params))
         rows = self.app.cursor.fetchall()
         return rows
 
-    def make_like(self, word):
-        return word.replace(' ', '%') + '%'
+    # 入力パラメータによりSQLを作成
+    def make_sql_params(self,sql):
+        params = list()
+        if self.keyword :
+            params.append(make_like(self.keyword))
+            sql += """ and title ilike %s """
+
+        if self.dp_from != '' and self.dp_to != '':
+            params.append(self.dp_from)
+            params.append(self.dp_to)
+            sql += """ and %s <= modified_date and modified_date <= %s """
+
+        return params, sql
 ################################################################################
 # セッションデータ
 ################################################################################

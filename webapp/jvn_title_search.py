@@ -9,6 +9,7 @@ import os
 import jvn_pagination
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
+from wsgi_handler import make_like
 ################################################################################
 # DAO(データアクセスオブジェクト)
 ################################################################################
@@ -17,16 +18,13 @@ class JvnDAO(object):
     def __init__(self, app):
         self.app = app
 
-    def make_like(self,word):
-        return word.replace(' ', '%') + '%'
-
     def get_count(self):
         sql_count = """select count(distinct c.cpe)
                        from jvn_vulnerability a,jvn_vulnerability_detail b,jvn_product c,jvn_vendor d
                        where a.title ilike %s and  a.identifier = b.identifier 
                        and   b.cpe = c.cpe and c.vid = d.vid"""
 
-        self.app.cursor.execute(sql_count,(self.make_like(self.app.ui.keyword), ))
+        self.app.cursor.execute(sql_count,(make_like(self.app.ui.keyword), ))
         count = self.app.cursor.fetchone()
         return count[0]
 
@@ -38,7 +36,7 @@ class JvnDAO(object):
                     group by c.vid, c.pid, d.vname, c.pname, c.cpe, c.fs_manage
                     order by c.vid, c.pid limit %s OFFSET %s"""
 
-        self.app.cursor.execute(sqlfmt,(self.make_like(self.app.ui.keyword)
+        self.app.cursor.execute(sqlfmt,(make_like(self.app.ui.keyword)
                                         ,PAGE_COUNT
                                         ,offset * PAGE_COUNT,))
         rows = self.app.cursor.fetchall()
@@ -52,7 +50,7 @@ class JvnDAO(object):
                     group by c.vid, c.pid, d.vname, c.pname, c.cpe, c.fs_manage
                     order by c.vid, c.pid"""
 
-        self.app.cursor.execute(sqlfmt,(self.make_like(jvn_state.keyword), ))
+        self.app.cursor.execute(sqlfmt,(make_like(jvn_state.keyword), ))
         rows = self.app.cursor.fetchall()
         return rows
 
