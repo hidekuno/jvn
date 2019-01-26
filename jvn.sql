@@ -61,6 +61,7 @@ CREATE TABLE jvn_vulnerability (
   description   text             NOT NULL,
   issued_date   timestamp        NOT NULL,
   modified_date timestamp        NOT NULL,
+  public_date   timestamp,
   ticket_modified_date timestamp
 );
 -- --------------------- 脆弱性情報(ワークテーブル) --------

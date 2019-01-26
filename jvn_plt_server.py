@@ -41,7 +41,7 @@ def makeBarChart(hfd):
     connection = psycopg2.connect(**CONNECTION_CONFIG)
 
     stmt = """select ym, count(ym) as cnt
-    from (select to_char(issued_date,'YYYYMM') as ym from  jvn_vulnerability where '2014-04-01' <= issued_date ) a
+    from (select to_char(public_date,'YYYYMM') as ym from  jvn_vulnerability where '2014-04-01' <= public_date ) a
     group by ym order by ym;"""
 
     rec = pd.read_sql(sql=stmt, con=connection, index_col='ym')
@@ -67,7 +67,7 @@ def makeLineChart(hfd):
     plt.rcParams['figure.figsize'] = 12.0,6.0
 
     connection = psycopg2.connect(**CONNECTION_CONFIG)
-    stmt = "select ym, count(ym) as cnt from (select to_char(issued_date,'YYYYMM') as ym from  jvn_vulnerability) a group by ym order by ym;"
+    stmt = "select ym, count(ym) as cnt from (select to_char(public_date,'YYYYMM') as ym from  jvn_vulnerability) a group by ym order by ym;"
     rec = pd.read_sql(sql=stmt, con=connection, index_col='ym')
     connection.close()
     rec.plot.line()
@@ -76,7 +76,7 @@ def makeLineChart(hfd):
     plt.tick_params(labelsize=14)
     plt.xlabel('年月', fontsize=14)
     t = datetime.now()
-    plt.title('集計期間(2007/4/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
+    plt.title('集計期間(1998/1/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
     plt.savefig(hfd, format='png')
 
 ################################################################################
