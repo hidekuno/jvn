@@ -50,6 +50,8 @@ def jvndb_detail(filename):
     for e in elem.findall(jvn_path("Vulinfo")):
         print("%s\t%s" % (e.find(jvn_path('VulinfoID')).text, e.find(jvn_path('VulinfoData')).find(jvn_path('DatePublic')).text))
 
-for y in range(1998,2019):
+#for y in range(1998,2019):
     #jvndb('jvndb_' + str(y) + '.rdf')
-    jvndb_detail('jvndb_detail_' + str(y) + '.rdf')
+#    jvndb_detail('jvndb_detail_' + str(y) + '.rdf')
+y = 2018
+jvndb_detail('jvndb_detail_' + str(y) + '.rdf')
