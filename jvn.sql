@@ -84,6 +84,11 @@ CREATE TABLE jvn_vulnerability_detail_work (
   identifier    varchar(32),
   cpe           varchar(255)
 );
+-- --------------------- 脆弱性情報詳細(ワークテーブル) ---
+CREATE TABLE jvn_mainte_work (
+  identifier    varchar(32)      NOT NULL PRIMARY KEY,
+  public_date   timestamp
+);
 -- --------------------- アカウント情報 --------------------
 CREATE TABLE jvn_account (
   user_id       varchar(32)    NOT NULL PRIMARY KEY,
