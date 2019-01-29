@@ -85,8 +85,6 @@ class JvnAPI(object):
             root = ElementTree.parse(urllib2.urlopen(url)).getroot()
             status = root.find(myjvn_path('Status', 'Status'))
 
-            #if not status.get("retCd") == "0":
-            #    raise JvnException(status)
             if not status.get("retCd") == "0":
                 logging.warning("BAD URL = " + url )
                 continue
@@ -259,6 +257,59 @@ class JvnVulnerability(object):
         self.vd_fd.close()
 
 ################################################################################
+# 脆弱性詳細情報
+################################################################################
+class JvnVulnDetailInfo(object):
+
+    ################################################################################
+    # 初期化
+    ################################################################################
+    def __init__(self,dao):
+        self.dao = dao
+        self.dao.cursor.execute("truncate table jvn_mainte_work")
+
+    ################################################################################
+    # URLを取得する
+    ################################################################################
+    def get_method(self):
+        params = ['method=getVulnDetailInfo'
+                  ,'vulnId=' + '+'.join(self.vulner)]
+        return '&'.join(params)
+
+    ################################################################################
+    # DBへ登録する
+    ################################################################################
+    def do_logic(self,root):
+        def jvn_path(name):
+            return '{http://jvn.jp/vuldef/}' + name
+
+        work = []
+        for e in root.findall(jvn_path("Vulinfo")):
+            work.append([e.find(jvn_path('VulinfoID')).text, e.find(jvn_path('VulinfoData')).find(jvn_path('DatePublic')).text])
+        self.dao.insert_mainte_work(work)
+    ################################################################################
+    # mainから呼ばれる処理
+    ################################################################################
+    def core_proc(self):
+        rows = self.dao.select_jvn_vulnerability()
+
+        params = []
+        for row in rows:
+            params.append(row[0])
+            if ((len(params) % 10) == 0) or (row[0] == rows[-1][0]):
+                self.vulner = params
+
+                jvn = JvnAPI(app, config,10)
+                jvn.max_count = 10
+                jvn.download()
+                del params[:]
+        self.dao.update_public_date()
+    ################################################################################
+    # クローズ
+    ################################################################################
+    def release(self):
+        pass
+################################################################################
 # データベースオブジェクト
 ################################################################################
 class RegisterDAO(object):
@@ -360,6 +411,34 @@ class RegisterDAO(object):
             self.cursor.execute(sql)
 
         self.connection.commit()
+
+    ################################################################################
+    # 発見日が未登録のものを抽出
+    ################################################################################
+    def select_jvn_vulnerability(self):
+        sql = "select identifier from  jvn_vulnerability where public_date is null;"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+    ################################################################################
+    # メンテナンス用テーブルへ登録
+    ################################################################################
+    def insert_mainte_work(self, rows):
+        sql = "insert into jvn_mainte_work(identifier, public_date) values (%s, %s)"
+        for row in rows:
+            self.cursor.execute(sql, tuple(row))
+        logging.info(str(len(rows)) + "counts")
+
+    ################################################################################
+    # 発見日を登録
+    ################################################################################
+    def update_public_date(self):
+        sql = """update jvn_vulnerability a
+                 set    public_date = b.public_date
+                 from   jvn_mainte_work as b
+                 where  a.identifier = b.identifier;"""
+        self.cursor.execute(sql)
+        self.connection.commit()
 ################################################################################
 # ログ初期化
 ################################################################################
@@ -439,8 +518,12 @@ if __name__ == "__main__":
         dao.insert_work()
         dao.merge_master()
         dao.merge_vulnerability()
-        dao.close()
 
+        # 詳細情報を登録する
+        app = JvnVulnDetailInfo(dao)
+        app.core_proc()
+
+        dao.close()
         logging.info("end")
         sys.exit(0)
 
