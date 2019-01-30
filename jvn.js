@@ -79,7 +79,7 @@ $('#execute_btn').click(function() {
 // 日付入力
 //====================================================================
 $(function(){
-    $('#dp_from').datetimepicker({lang:"ja", format: 'Y/m/d H:i:00'});
+    $('#dp_from').datetimepicker({lang:"ja", format: 'Y/m/d 00:00:00'});
     $('#dp_to').datetimepicker({lang:"ja", format: 'Y/m/d H:i:00'});
 });
 //====================================================================
