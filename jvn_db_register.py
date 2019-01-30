@@ -127,9 +127,7 @@ class JvnVendor(object):
     ################################################################################
     def do_logic(self,root):
         for vendor in root.findall(myjvn_path('Results', 'Vendor')):
-            print >> self.vender_fd, "%s\t%s\t%s" % (vendor.get('vid')
-                                                     ,vendor.get('vname')
-                                                     ,vendor.get('cpe'))
+            self.vender_fd.write("%s\t%s\t%s\n" % (vendor.get('vid'),vendor.get('vname'),vendor.get('cpe')))
 
     ################################################################################
     # クローズ
@@ -163,10 +161,10 @@ class JvnProduct(object):
     def do_logic(self,root):
         for vendor in root.findall(myjvn_path('Results', 'Vendor')):
             for product in vendor:
-                print >> self.product_fd, "%s\t%s\t%s\t%s" % (product.get('pid')
-                                                              ,product.get('pname')
-                                                              ,product.get('cpe')
-                                                              ,vendor.get('vid'))
+                self.product_fd.write("%s\t%s\t%s\t%s\n" % (product.get('pid')
+                                                            ,product.get('pname')
+                                                            ,product.get('cpe')
+                                                            ,vendor.get('vid')))
                 
     ################################################################################
     # デバッグ用関数
@@ -174,7 +172,7 @@ class JvnProduct(object):
     def debug_tag(self,element):
         for i in element.getiterator():
             if i.tag:
-                print 'tag : '+ i.tag
+                print('tag : '+ i.tag)
 
     ################################################################################
     # クローズ
@@ -227,15 +225,15 @@ class JvnVulnerability(object):
 
             title       = title.replace(u'\\', u'￥')
             description = description.replace(u'\\', u'￥')
-            print >> self.v_fd, "%s\t%s\t%s\t%s\t%s\t%s" % (identifier
-                                                            ,title
-                                                            ,link
-                                                            ,description
-                                                            ,issued_date
-                                                            ,modified_date)
+            self.v_fd.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (identifier
+                                                          ,title
+                                                          ,link
+                                                          ,description
+                                                          ,issued_date
+                                                          ,modified_date))
 
             for cpe in item.findall(self.mod_sec_path('cpe')):
-                print >> self.vd_fd, "%s\t%s" % (identifier,cpe.text)
+                self.vd_fd.write("%s\t%s\n" % (identifier,cpe.text))
 
     ################################################################################
     # 各データの完全パスを求める
