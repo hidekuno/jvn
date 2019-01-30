@@ -76,8 +76,7 @@ class JvnAPI(object):
     def download(self):
         for s in range(1, self.max_count, self.page_count):
 
-            param = reduce(lambda a, b: a + "&" + b
-                           ,['startItem' + '=' + str(s), 'maxCountItem'  + '=' + str(self.page_count)])
+            param ="&".join(['startItem' + '=' + str(s), 'maxCountItem'  + '=' + str(self.page_count)])
 
             url = self.jvn_url + self.jvn.get_method() + '&' + param
             logging.debug("URL = " + url )
@@ -92,7 +91,7 @@ class JvnAPI(object):
             self.jvn.do_logic(root)
 
             response = ["totalRes","totalResRet","firstRes"]
-            logging.debug(reduce(lambda a, b: a + " " + b,[x + " = " + str(status.get(x)) for x in response]))
+            logging.debug(" ".join([x + " = " + str(status.get(x)) for x in response]))
             check_count = [ int(status.get(x)) for x in response ]
 
             if (check_count[1] + check_count[2]) > check_count[0]:
