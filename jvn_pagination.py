@@ -16,6 +16,9 @@ PAGE_COUNT     = 10
 ################################################################################
 class JvnPage(object):
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.page = 0
         self.total_count = 0
         self.total_page  = 0
@@ -90,6 +93,7 @@ class SearchModule():
         # 検索結果がゼロの場合
         if (self.ui.total_count == 0):
             self.error_message   = '該当するレコードが存在しません。検索条件をチェックしてください。'
+            self.ui.reset()
             return
 
         # 検索結果が上限値を超えた場合
