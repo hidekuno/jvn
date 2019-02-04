@@ -4,7 +4,7 @@
  # hidekuno@gmail.com
  #
  #}
-{% include 'template/jvn_header.tpl' %}
+{% include 'template/jvn_header.j2' %}
     <div class="container-fluid">
       <h1 class="page-header">{{ app.title_name }}</h1>
       <center>
@@ -14,4 +14,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.tpl' %}
+{% include 'template/jvn_footer.j2' %}

@@ -87,7 +87,7 @@ class ProductListLogic(jvn_pagination.SearchModule):
     ################################################################################
     def initialize(self):
         # インスタンス変数の初期化
-        self.jinja_html_file = 'jvn_search.tpl'
+        self.jinja_html_file = 'jvn_search.j2'
         self.MAX_TOTAL_COUNT = 1000
         self.dao = JvnDAO(self)
 
