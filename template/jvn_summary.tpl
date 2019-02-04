@@ -5,7 +5,7 @@
  #
  #}
 
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
     <div class="container-fluid">
       <div class="row">
         <div class="main">
@@ -40,4 +40,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}

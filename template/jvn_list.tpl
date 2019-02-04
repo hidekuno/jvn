@@ -4,7 +4,7 @@
  # hidekuno@gmail.com
  #
  #}
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
     <div class="container-fluid">
       <div class="row">
         <div class="main">
@@ -61,7 +61,7 @@
             </table>
             <input type="hidden" name="identifier" id="identifier" value="" />
             </form>
-{% include 'template/jvn_pager.html' %}
+{% include 'template/jvn_pager.tpl' %}
           </div>
         </div>
       </div>
@@ -69,4 +69,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}

@@ -4,7 +4,7 @@
  # hidekuno@gmail.com
  #
  #}
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
 
     <div class="container-fluid">
       <div class="row">
@@ -55,7 +55,7 @@
 
               </tbody>
             </table>
-{% include 'template/jvn_pager.html' %}
+{% include 'template/jvn_pager.tpl' %}
 
             <form role="form" method="post" action="{{app.topuri}}/jvn_search/maintenance">
                <button class="btn btn-lg btn-primary jvn-search" id="maintenance_btn" type="submit">
@@ -68,4 +68,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}
