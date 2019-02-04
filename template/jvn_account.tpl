@@ -4,7 +4,7 @@
  # hidekuno@gmail.com
  #
  #}
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
     <div class="container-fluid">
       <div class="row">
         <div class="main">
@@ -65,7 +65,7 @@
     </form>
     </div>
 
-    {% include 'template/jvn_dialog.html' %}
+    {% include 'template/jvn_dialog.tpl' %}
     <script type='text/javascript'>
 
       $('.jvn_del_account_button').click( function() {
@@ -109,4 +109,4 @@
     {% if app.error_message != '' %}
      <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}

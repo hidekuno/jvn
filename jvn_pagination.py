@@ -175,7 +175,7 @@ class Maintenance(JvnApplication):
         pass
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_develop.html'
+        self.jinja_html_file = 'jvn_develop.tpl'
 
         dao = self.dao()
         app_name = self.app_name()
