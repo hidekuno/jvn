@@ -5,12 +5,12 @@
  #
  #}
 
-{% include 'template/jvn_header.tpl' %}
+{% include 'template/jvn_header.j2' %}
     <div class="container-fluid">
       <div class="row">
         <div class="main">
-          <h1 class="page-header">JVN ベンダー製品情報 編集依頼完了</h1>
-          <center><h4 style="color:blue">以下製品を各担当者へメンテナンス依頼しました。</h4></center>
+          <h1 class="page-header">JVN 脆弱性情報 チケット登録完了</h1>
+          <center><h4 style="color:blue">JVN番号：{{app.identifier}}　チケットの登録を行いました。</h4></center>
           <form name="execute_back" role="form" class="form-back" method="post" action="{{app.topuri}}/jvn_list/back">
             <button class="btn btn-lg btn-primary jvn-search" type="submit">
                <span class="glyphicon glyphicon-arrow-left"></span>戻る</button>
@@ -45,4 +45,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.tpl' %}
+{% include 'template/jvn_footer.j2' %}

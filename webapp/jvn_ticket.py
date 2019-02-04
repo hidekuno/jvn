@@ -50,7 +50,7 @@ class Index(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_ticket.tpl'
+        self.jinja_html_file = 'jvn_ticket.j2'
         self.identifier = req.params['identifier']
 
         ui = session[get_session_key(req)] = JvnState(0)
@@ -65,7 +65,7 @@ class Execute(JvnApplication):
 
     def do_logic(self, req, res, session):
 
-        self.jinja_html_file = 'jvn_ticket_complete.tpl'
+        self.jinja_html_file = 'jvn_ticket_complete.j2'
         self.identifier = req.params['identifier']
         ui = session.get(get_session_key(req))
 

@@ -98,7 +98,7 @@ class ListLogic(jvn_pagination.SearchModule):
     ################################################################################
     def initialize(self):
         # インスタンス変数の初期化
-        self.jinja_html_file = 'jvn_list.tpl'
+        self.jinja_html_file = 'jvn_list.j2'
         self.dao = JvnDAO(self)
         self.MAX_TOTAL_COUNT = 10000000
 
