@@ -25,4 +25,4 @@ class JvnDelegate(object):
             self.image_url = url[0:idx] + ':' + self.config.get('plt','port') + '/' + uri
 
         self.ui = session[get_session_key(req)] = JvnState()
-        self.jinja_html_file = 'jvn_chart.tpl'
+        self.jinja_html_file = 'jvn_chart.j2'
