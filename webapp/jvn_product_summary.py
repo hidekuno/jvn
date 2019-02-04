@@ -44,6 +44,6 @@ class Index(JvnApplication):
     def do_logic(self, req, res, session):
         self.title_name = 'JVN 製品別脆弱性件数'
         self.ui = session[get_session_key(req)] = JvnState()
-        self.jinja_html_file = 'jvn_summary.tpl'
+        self.jinja_html_file = 'jvn_summary.j2'
         dao = JvnDAO(self)
         self.result = dao.get_records()

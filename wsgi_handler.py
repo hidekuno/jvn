@@ -126,13 +126,13 @@ class JvnApplication(object):
                 self.save_token(session)
                 self.do_logic(req,res,session)
             else:
-                self.jinja_html_file = "login.tpl"
+                self.jinja_html_file = "login.j2"
 
             self.cursor.close()
             connection.commit()
 
         except Exception as e:
-            self.jinja_html_file = 'jvn_error.tpl'
+            self.jinja_html_file = 'jvn_error.j2'
             self.exception = str(e)
             self.trace     = traceback.format_exc()
 
@@ -246,7 +246,7 @@ def logout(environ, start_response):
             os.remove(session_file)
 
     env = Environment(loader=FileSystemLoader('/var/www/jvn', encoding='utf8'),autoescape=True)
-    tmpl = env.get_template(os.path.join('template', 'login.tpl'))
+    tmpl = env.get_template(os.path.join('template', 'login.j2'))
 
     start_response('200 OK', [('Content-type', 'text/html')])
     return tmpl.render(app=UnknownApp()).encode("utf-8")

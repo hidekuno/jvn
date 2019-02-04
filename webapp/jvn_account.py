@@ -29,7 +29,7 @@ class Index(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_account.tpl'
+        self.jinja_html_file = 'jvn_account.j2'
         self.result = do_transaction(lambda db : db.query(Account).all(),self)
 
 ################################################################################
@@ -40,7 +40,7 @@ class Regist(JvnApplication):
 
         session[ get_session_key(req) ] = JvnState()
 
-        self.jinja_html_file = 'jvn_account_edit.tpl'
+        self.jinja_html_file = 'jvn_account_edit.j2'
         self.ui = Account({'user_id'     : ''
                            ,'passwd'     : ''
                            ,'user_name'  : ''
@@ -63,7 +63,7 @@ class Modify(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_account_edit.tpl'
+        self.jinja_html_file = 'jvn_account_edit.j2'
 
         self.ui = do_transaction(lambda db : db.query(Account).filter_by(user_id=req.params['user_id']).first(),self)
 
@@ -89,7 +89,7 @@ class Execute(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_account.tpl'
+        self.jinja_html_file = 'jvn_account.j2'
 
         #リクエストのパスワードとセッション情報のそれが同一の場合は変更しない。
         jvn = session.get(get_session_key(req))
@@ -123,7 +123,7 @@ class Delete(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_account.tpl'
+        self.jinja_html_file = 'jvn_account.j2'
 
         def do_execute(db):
             rec = db.query(Account).filter_by(user_id=req.params['delete_user_id']).first()
