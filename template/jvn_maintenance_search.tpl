@@ -4,21 +4,12 @@
  # hidekuno@gmail.com
  #
  #}
-
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
 
     <div class="container-fluid">
       <div class="row">
         <div class="main">
-          <h1 class="page-header">JVN タイトル製品情報検索</h1>
-          <div class="form-search">
-            <form role="form" method="post" action="{{app.topuri}}/jvn_title_search/search">
-            <input type="text" id="keyword_txt" name="keyword"  value="{{app.ui.keyword}}"  class="form-control"  placeholder="キーワード..." required autofocus>
-  
-              <button class="btn btn-lg btn-primary jvn-search" id="product_search_btn" type="submit">
-              <span class="glyphicon glyphicon-search"></span>検索</button>
-            </form>
-          </div>
+          <h1 class="page-header">JVNメンテナンス未実施製品検索</h1>
 
           <div class="table-responsive">
             <table id="product_list_tbl" class="table table-striped">
@@ -42,9 +33,9 @@
 
               </tbody>
             </table>
-{% include 'template/jvn_pager.html' %}
+{% include 'template/jvn_pager.tpl' %}
 
-            <form role="form" method="post" action="{{app.topuri}}/jvn_title_search/maintenance">
+            <form role="form" method="post" action="{{app.topuri}}/jvn_maintenance_search/maintenance">
                <button class="btn btn-lg btn-primary jvn-search" id="maintenance_btn" type="submit">
                <span class="glyphicon glyphicon-wrench"></span>メンテナンス</button>
             </form>
@@ -55,4 +46,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}

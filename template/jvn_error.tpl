@@ -5,7 +5,7 @@
  #
  #}
 
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
 
     <div class="container-fluid">
       <div class="row">
@@ -18,4 +18,4 @@
         </div>
       </div>
     </div>
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}
