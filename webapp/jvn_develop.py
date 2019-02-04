@@ -47,7 +47,7 @@ class Index(JvnApplication):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_develop.html'
+        self.jinja_html_file = 'jvn_develop.tpl'
         ui = session[get_session_key(req)] = JvnState(0)
 
         dao = JvnDAO(self)
@@ -64,7 +64,7 @@ class Update(JvnApplication):
 
     def do_logic(self, req, res, session):
 
-        self.jinja_html_file = 'jvn_develop_complete.html'
+        self.jinja_html_file = 'jvn_develop_complete.tpl'
 
         def do_execute(db):
             records = []

@@ -4,7 +4,7 @@
  # hidekuno@gmail.com
  #
  #}
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
 
     <div class="container-fluid">
       <div class="row">
@@ -36,7 +36,7 @@
         </div>
       </div>
     </div>
-    {% include 'template/jvn_dialog.html' %}
+    {% include 'template/jvn_dialog.tpl' %}
     <script type='text/javascript'>
       var messages = {'regist':'登録', 'modify':'変更'};
       var msg = messages[location.pathname.split("/").slice(-1)];
@@ -85,4 +85,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}

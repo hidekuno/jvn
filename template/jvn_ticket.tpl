@@ -5,33 +5,21 @@
  #
  #}
 
-{% include 'template/jvn_header.html' %}
+{% include 'template/jvn_header.tpl' %}
     <div class="container-fluid">
       <div class="row">
         <div class="main">
-          <h1 class="page-header">JVN 脆弱性情報調査</h1>
+          <h1 class="page-header">JVN 脆弱性情報 チケット登録</h1>
+          <center><h4 style="color:blue">JVN番号：{{app.identifier}}　チケットの登録を行います。</h4></center>
           <div class="table-responsive">
             <form name="execute_back" role="form" class="form-back" method="post" action="{{app.topuri}}/jvn_list/back">
               <button class="btn btn-lg btn-primary jvn-search" type="submit">
                <span class="glyphicon glyphicon-arrow-left"></span>戻る</button>
             </form>
-            <form name="execute_form" role="form" method="post" action="{{app.topuri}}/jvn_operation/execute">
-            <table id="vulnerability_prodcut" class="table table-striped">
+            <form name="execute_form" role="form" method="post" action="{{app.topuri}}/jvn_ticket/execute">
+            <table class="table table-striped">
               <thead>
                 <tr>
-                  <th><div class="dropdown">
-	            <button style="width:20px; height:24px; background-color: #ffffff; padding: 2px 2px;" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-<span class="caret"></span>
-
-
-	            </button>
-	            <ul class="dropdown-menu jvn-edit-menu" role="menu">
-	              <li role="presentation"><a id="undefine_select_btn" style="font-size: 90%" href="#">未定義選択</a></li>
-	              <li role="presentation"><a id="undefine_clear_btn"  style="font-size: 90%" href="#">未定義解除</a></li>
-	              <li role="presentation"><a id="all_select_btn"      style="font-size: 90%" href="#">全選択</a></li>
-	              <li role="presentation"><a id="all_clear_btn"       style="font-size: 90%" href="#">全解除</a></li>
-	            </ul>
-                  </div></th>
                   <th>ＦＳ取扱</th>
                   <th>ベンダー名</th>
                   <th>製品名</th>
@@ -41,7 +29,6 @@
               <tbody>
                 {% for item in app.result %}
                 <tr>
-                  <td width="20px"><input class="rec" type="checkbox" name="check{{item[0]}}" id="check{{item[0]}}" value="{{item[3]}}"></td>
                   <td>{{ item[4] }}</td>
                   <td>{{ item[1] }}</td>
                   <td>{{ item[2] }}</td>
@@ -53,9 +40,11 @@
             {% for item in app.result %}
             <input type="hidden" name="vname{{item[0]}}" value="{{item[1]}}" />
             <input type="hidden" name="pname{{item[0]}}" value="{{item[2]}}" />
+            <input type="hidden" name="cpe{{item[0]}}"   value="{{item[3]}}" />
             {% endfor %}
+            <input type="hidden" name="identifier" value="{{app.identifier}}" />
             <button class="btn btn-lg btn-primary jvn-search" type="submit">
-               <span class="glyphicon glyphicon-pencil"></span>依頼</button>
+               <span class="glyphicon glyphicon-pencil"></span>登録</button>
             </form>
           </div>
         </div>
@@ -66,4 +55,4 @@
     {% if app.error_message != '' %}
         <center><h4 style="color:red">{{ app.error_message }}</h4></center>
     {% endif %}
-{% include 'template/jvn_footer.html' %}
+{% include 'template/jvn_footer.tpl' %}
