@@ -72,7 +72,7 @@ def do_transaction(func,app):
                                                ,app.config.get('db','port')
                                                ,app.config.get('db','database'))
         engine = create_engine(dburl)
-        Session = orm.scoped_session(orm.sessionmaker(bind=engine))
+        Session = orm.scoped_session(orm.sessionmaker(bind=engine, expire_on_commit=False))
         db = Session()
         ret = func(db)
         db.commit()
