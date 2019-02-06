@@ -1,1 +1,3 @@
-dist/* linguist-vendored
+dist/css/* linguist-vendored
+dist/fonts/* linguist-vendored
+dist/js/* linguist-vendored
