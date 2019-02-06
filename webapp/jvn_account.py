@@ -30,7 +30,7 @@ class Index(JvnApplication):
 
     def do_logic(self, req, res, session):
         self.jinja_html_file = 'jvn_account.j2'
-        self.result = do_transaction(lambda db : db.query(Account).all(),self)
+        self.result = do_transaction(lambda db : db.query(Account).order_by(Account.user_id).all(),self)
 
 ################################################################################
 # 新規登録処理
@@ -111,7 +111,7 @@ class Execute(JvnApplication):
                 rec.department  = req.params['department']
                 rec.privs       = req.params['privs']
 
-            return db.query(Account).all()
+            return db.query(Account).order_by(Account.user_id).all()
 
         self.result = do_transaction(do_execute,self)
 ################################################################################
@@ -128,6 +128,6 @@ class Delete(JvnApplication):
         def do_execute(db):
             rec = db.query(Account).filter_by(user_id=req.params['delete_user_id']).first()
             db.delete(rec)
-            return db.query(Account).all()
+            return db.query(Account).order_by(Account.user_id).all()
 
         self.result = do_transaction(do_execute,self)
