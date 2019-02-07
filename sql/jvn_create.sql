@@ -107,7 +107,7 @@ CREATE INDEX jvn_vulnerability_idx_1        ON jvn_vulnerability (modified_date)
 CREATE INDEX jvn_vulnerability_detail_idx_1 ON jvn_vulnerability_detail (identifier);
 CREATE INDEX jvn_vulnerability_detail_idx_2 ON jvn_vulnerability_detail (cpe);
 
-delete from jvn_account;
+truncate table jvn_account;
 insert into jvn_account values
-('kunohi_admin','', 'くの　あどみん','hidekuno@gmail.com','開発部','admin'),
-('kunohi_user' ,'', 'くの　ゆーざー','hidekuno@gmail.com','開発部','user');
+('hidekuno_admin','', 'あどみん','hidekuno@gmail.com','開発部','admin'),
+('hidekuno_user' ,'', 'ゆーざー','hidekuno@gmail.com','開発部','user');
