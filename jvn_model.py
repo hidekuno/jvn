@@ -31,6 +31,20 @@ class Account(Base):
         self.email       = row['email']
         self.department  = row['department']
         self.privs       = row['privs']
+
+    def validate(self,db, method):
+        error_message = "入力されていない項目があります。(全て必須項目です。)"
+        if not self.user_id:    return (False, error_message)
+        if not self.passwd:     return (False, error_message)
+        if not self.user_id:    return (False, error_message)
+        if not self.user_name:  return (False, error_message)
+        if not self.email:      return (False, error_message)
+        if not self.department: return (False, error_message)
+        if not self.privs:      return (False, error_message)
+
+        if method == "regist" and db.query(Account).filter_by(user_id=self.user_id).first():
+            return (False, "既にアカウントが存在してます。")
+        return True, ''
 ################################################################################
 # 製品情報(Model)
 ################################################################################
