@@ -47,7 +47,6 @@
 	{% if app.exception is none %}
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            {% if app.login_user.privs == 'admin' %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-filter"></span>集計結果<b class="caret"></b></a>
               <ul class="dropdown-menu jvn-dropdown-menu">
@@ -60,6 +59,7 @@
                 <li><a id="jvn_linechart" class="jvn_menu_btn" href="#">発生件数(折れ線グラフ)</a></li>
               </ul>
             </li>
+            {% if app.login_user.privs == 'admin' %}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-search"></span>製品検索<b class="caret"></b></a>
               <ul class="dropdown-menu jvn-dropdown-menu">
