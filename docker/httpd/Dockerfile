@@ -14,8 +14,13 @@ RUN yum install -y python-jinja2 |true
 RUN yum install -y python-sqlalchemy |true
 RUN yum install -y postgresql |true
 
+# setup python pip
+RUN curl -O https://bootstrap.pypa.io/get-pip.py
+RUN python get-pip.py
+RUN pip install lepl
+
 # setup apache
-RUN systemctl enable httpd
+#RUN systemctl enable httpd
 
 # setup app
 ADD docker/httpd/wsgi.conf /etc/httpd/conf.d/wsgi.conf
