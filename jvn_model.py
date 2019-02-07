@@ -9,6 +9,7 @@
 from sqlalchemy import orm
 from sqlalchemy import create_engine, Column, Integer, String,SmallInteger, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+import lepl.apps.rfc3696
 
 Base = declarative_base()
 ################################################################################
@@ -23,7 +24,7 @@ class Account(Base):
     email      = Column(String)
     department = Column(String)
     privs      = Column(String)
- 
+
     def __init__(self,row, passwd):
         self.user_id     = row['user_id']
         self.passwd      = passwd
@@ -36,14 +37,26 @@ class Account(Base):
         error_message = "入力されていない項目があります。(全て必須項目です。)"
         if not self.user_id:    return (False, error_message)
         if not self.passwd:     return (False, error_message)
-        if not self.user_id:    return (False, error_message)
         if not self.user_name:  return (False, error_message)
         if not self.email:      return (False, error_message)
         if not self.department: return (False, error_message)
         if not self.privs:      return (False, error_message)
 
+        error_message = "最大桁数をこえている項目があります。"
+        if 32  < len(self.user_id):    return (False, error_message)
+        if 32  < len(self.passwd):     return (False, error_message)
+        if 255 < len(self.user_name):  return (False, error_message)
+        if 255 < len(self.email):      return (False, error_message)
+        if 32  < len(self.department): return (False, error_message)
+        if 8   < len(self.privs):      return (False, error_message)
+
         if method == "regist" and db.query(Account).filter_by(user_id=self.user_id).first():
             return (False, "既にアカウントが存在してます。")
+
+        email_validator = lepl.apps.rfc3696.Email()
+        if not email_validator(self.email):
+            return (False, "メールアドレスの形式が正しくありません。")
+
         return True, ''
 ################################################################################
 # 製品情報(Model)
