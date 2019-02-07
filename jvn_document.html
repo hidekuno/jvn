@@ -62,13 +62,13 @@ host    all         all         127.0.0.1/32          password
 su - postgres
 psql
 
-create user kunohi;
-create database kunohi_db owner kunohi;
-alter role kunohi with password 'kunohi';
+create user hideki;
+create database hideki_db owner hideki;
+alter role hideki with password 'hideki';
 
 (7) データ投入
 cd /var/www/jvn
-zcat jvn_dump.sql.gz | psql -h 127.0.0.1 -U kunohi kunohi_db
+zcat jvn_dump.sql.gz | psql -h 127.0.0.1 -U hideki hideki_db
 
 
 =========================== 不整合データ調査 メンテナンス ===============================
