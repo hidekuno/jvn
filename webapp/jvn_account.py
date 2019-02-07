@@ -21,6 +21,17 @@ class JvnState(object):
         self.passwd     = ''
 
 ################################################################################
+# セッションデータ
+################################################################################
+def setPrivs(app, privs):
+    if privs == 'admin':
+        app.admin = 'checked'
+        app.user  = ''
+    else:
+        app.admin = ''
+        app.user  = 'checked'
+
+################################################################################
 # 初期表示処理
 ################################################################################
 class Index(JvnApplication):
@@ -51,9 +62,7 @@ class Regist(JvnApplication):
 
         self.readonly = ''
         self.method = 'regist'
-
-        self.admin = 'checked'
-        self.user  = ''
+        setPrivs(self, 'user')
 ################################################################################
 # 変更処理
 ################################################################################
@@ -73,13 +82,7 @@ class Modify(JvnApplication):
 
         self.readonly = 'readonly'
         self.method = 'modify'
-        if self.ui.privs == 'admin':
-            self.admin = 'checked'
-            self.user  = ''
-        else:
-            self.admin = ''
-            self.user  = 'checked'
-
+        setPrivs(self, self.ui.privs)
 ################################################################################
 # 更新処理
 ################################################################################
@@ -90,6 +93,7 @@ class Execute(JvnApplication):
 
     def do_logic(self, req, res, session):
         self.jinja_html_file = 'jvn_account.j2'
+        self.method = req.params['method'] 
 
         #リクエストのパスワードとセッション情報のそれが同一の場合は変更しない。
         jvn = session.get(get_session_key(req))
@@ -99,18 +103,24 @@ class Execute(JvnApplication):
             hash_code = hash_passwd(req.params['passwd'])
 
         def do_execute(db):
-            if req.params['method'] == 'regist':
-                rec = Account(req.params, hash_code)
+            rec = Account(req.params, hash_code)
+            ret, self.error_message = rec.validate(db, self.method)
+            if ret == False:
+                self.jinja_html_file = 'jvn_account_edit.j2'
+                self.ui = rec
+                setPrivs(self, rec.privs)
+                return
+
+            if self.method == 'regist':
                 db.add(rec)
 
-            elif req.params['method'] == 'modify':
+            elif self.method== 'modify':
                 rec = db.query(Account).filter_by(user_id=req.params['user_id']).first()
                 rec.passwd      = hash_code
                 rec.user_name   = req.params['user_name']
                 rec.email       = req.params['email']
                 rec.department  = req.params['department']
                 rec.privs       = req.params['privs']
-
             return db.query(Account).order_by(Account.user_id).all()
 
         self.result = do_transaction(do_execute,self)
