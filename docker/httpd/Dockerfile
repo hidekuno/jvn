@@ -19,9 +19,6 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py
 RUN python get-pip.py
 RUN pip install lepl
 
-# setup apache
-#RUN systemctl enable httpd
-
 # setup app
 ADD docker/httpd/wsgi.conf /etc/httpd/conf.d/wsgi.conf
 ADD docker/httpd/jvn.conf /etc/httpd/conf.d/jvn.conf
