@@ -50,11 +50,11 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-filter"></span>集計結果<b class="caret"></b></a>
               <ul class="dropdown-menu jvn-dropdown-menu">
-                <li><a id="jvn_product_summary" class="jvn_menu_btn" href="#">製品別脆弱性件数</a></li>
+                <li><a id="jvn_product_summary" class="jvn_menu_btn" href="#"><span class="glyphicon glyphicon-zoom-in"></span>製品別脆弱性件数</a></li>
                 <li class="divider jvn-divider"></li>
-                <li><a id="jvn_vendor_summary" class="jvn_menu_btn" href="#">ベンダ別脆弱性件数</a></li>
+                <li><a id="jvn_vendor_summary" class="jvn_menu_btn" href="#"><span class="glyphicon glyphicon-zoom-out"></span>ベンダ別脆弱性件数</a></li>
                 <li class="divider jvn-divider"></li>
-                <li><a id="jvn_barchart" class="jvn_menu_btn" href="#">発生件数(棒グラフ)</a></li>
+                <li><a id="jvn_barchart" class="jvn_menu_btn" href="#"><span class="glyphicon glyphicon-stats"></span>発生件数(棒グラフ)</a></li>
                 <li class="divider jvn-divider"></li>
                 <li><a id="jvn_linechart" class="jvn_menu_btn" href="#">発生件数(折れ線グラフ)</a></li>
               </ul>
@@ -70,8 +70,13 @@
                 <li><a id="jvn_title_search" class="jvn_menu_btn" href="#">脆弱性タイトル検索</a></li>
               </ul>
             </li>
-            <li><a id="jvn_develop" class="jvn_menu_item jvn_menu_btn" href="#"><span class="glyphicon glyphicon-wrench"></span> 依頼チェック </a></li>
-            <li><a id="jvn_account" class="jvn_menu_item jvn_menu_btn" href="#"><span class="glyphicon glyphicon-user"></span>アカウント管理</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-wrench"></span>メンテナンス<b class="caret"></b></a>
+              <ul class="dropdown-menu jvn-dropdown-menu">
+                <li><a id="jvn_develop" class="jvn_menu_btn" href="#"><span class="glyphicon glyphicon-ok"></span> 依頼チェック </a></li>
+                <li><a id="jvn_account" class="jvn_menu_btn" href="#"><span class="glyphicon glyphicon-user"></span>アカウント管理</a></li>
+              </ul>
+            </li>
             {% endif %}
             <li><a class="jvn_menu_item" href="{{app.topuri}}/jvn_logout"><span class="glyphicon glyphicon-off"></span>ログアウト</a></li>
             <li><a class="jvn_menu_item" href="/jvn/jvn_document.html"><span class="glyphicon glyphicon-book"></span>ヘルプ</a></li>
