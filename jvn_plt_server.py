@@ -40,22 +40,24 @@ def makeBarChart(hfd):
 
     connection = psycopg2.connect(**CONNECTION_CONFIG)
 
-    stmt = """select ym, count(ym) as cnt
-    from (select to_char(public_date,'YYYYMM') as ym from  jvn_vulnerability where '2014-04-01' <= public_date ) a
-    group by ym order by ym;"""
+    stmt = """select y, y as yyyy, count(y) as cnt
+    from (select to_char(public_date,'YYYY') as y from jvn_vulnerability where '1998-01-01' <= public_date ) a
+    group by y order by y;"""
+    df = pd.read_sql(sql=stmt, con=connection, index_col='y')
 
-    rec = pd.read_sql(sql=stmt, con=connection, index_col='ym')
+    stmt = """select y, y as yyyy, count(y) as cnt
+    from (select to_char(issued_date,'YYYY') as y from jvn_vulnerability where '1998-01-01' <= issued_date) a
+    group by y order by y;"""
+    issued_df = pd.read_sql(sql=stmt, con=connection, index_col='y')
     connection.close()
-    df = rec[(rec['cnt'] > 100)]
+    df['icnt'] = issued_df['cnt']
+
     df.plot.bar(width=0.8)
-
-    plt.legend(['件数'], fontsize=14)
+    plt.legend(['発表日','IPA公表日'], fontsize=14)
     plt.tick_params(labelsize=14)
-    plt.xlabel('年月', fontsize=14)
+    plt.xlabel('年', fontsize=14)
     t = datetime.now()
-    plt.title('集計期間(2014/4/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
-
-    #plt.savefig('jvn.png')
+    plt.title('脆弱性発生件数(1998/1/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
     plt.savefig(hfd, format='png')
 
 ################################################################################
@@ -67,14 +69,17 @@ def makeLineChart(hfd):
     plt.rcParams['figure.figsize'] = 12.0,6.0
 
     connection = psycopg2.connect(**CONNECTION_CONFIG)
-    stmt = "select ym, count(ym) as cnt from (select to_char(public_date,'YYYYMM') as ym from  jvn_vulnerability) a group by ym order by ym;"
-    rec = pd.read_sql(sql=stmt, con=connection, index_col='ym')
+    stmt = "select y, count(y) as cnt from (select to_char(public_date,'YYYY') as y from  jvn_vulnerability) a group by y order by y;"
+    df = pd.read_sql(sql=stmt, con=connection, index_col='y')
+    stmt = "select y, count(y) as cnt from (select to_char(issued_date,'YYYY') as y from  jvn_vulnerability) a group by y order by y;"
+    issued_df = pd.read_sql(sql=stmt, con=connection, index_col='y')
     connection.close()
-    rec.plot.line()
+    df['icnt'] = issued_df['cnt']
 
-    plt.legend(['件数'], fontsize=14)
+    df.plot.line()
+    plt.legend(['発表日','IPA公表日'], fontsize=14)
     plt.tick_params(labelsize=14)
-    plt.xlabel('年月', fontsize=14)
+    plt.xlabel('年', fontsize=14)
     t = datetime.now()
     plt.title('集計期間(1998/1/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
     plt.savefig(hfd, format='png')
