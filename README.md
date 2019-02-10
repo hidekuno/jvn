@@ -13,7 +13,7 @@ https://jvndb.jvn.jp/
 - 集計画面
 ![image](https://user-images.githubusercontent.com/4899700/47139528-fb050c80-d2f6-11e8-8427-eeb267a43f9f.png)
 - グラフ画面
-![image](https://user-images.githubusercontent.com/4899700/47139788-a4e49900-d2f7-11e8-9301-10630a7536f0.png)
+![image](https://user-images.githubusercontent.com/22115777/52532776-3d060280-2d6d-11e9-9c66-ca9e8ed2844d.png)
 
 ## 開発環境
 | Item   | Ver. |備考|
