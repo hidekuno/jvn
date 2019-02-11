@@ -30,11 +30,13 @@ import uuid
 import hashlib
 import poplib
 
+from jvn_model import Account
+from jvn_model import do_transaction
+
 TOKEN_KEY      = 'web_token'
 LOGIN_USER_KEY = 'jvn_user'
 SALT           = "JVN"
 JVN_SID        = "JVN_SID"
-
 ################################################################################
 # アプリケーション骨格処理
 ################################################################################
@@ -72,17 +74,14 @@ class JvnApplication(object):
     # Check login
     ################################################################################
     def check_login(self, req, session):
+        def select_user(db):
+            return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY], passwd = hash_passwd(req.params['jvn_passwd'])).first()
+
         login_ok = False
-
         if LOGIN_USER_KEY in req.params:
-
-            sql_stmt = """select user_id, user_name, email, department, privs from jvn_account 
-                          where user_id = %s and passwd = %s"""
-            self.cursor.execute(sql_stmt, (req.params[LOGIN_USER_KEY], hash_passwd(req.params['jvn_passwd'])))
-            rows = self.cursor.fetchall()
-
-            if (len(rows) > 0):
-                self.login_user = session[LOGIN_USER_KEY] = JvnUser(rows[0])
+            rec = do_transaction(select_user,self)
+            if rec:
+                self.login_user = session[LOGIN_USER_KEY] = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
                 login_ok = True
 
             elif True == auth_pop_user(req.params[LOGIN_USER_KEY],req.params['jvn_passwd']):
@@ -185,14 +184,13 @@ class JvnUser(object):
 def auth_pop_user(user, passwd):
 
     auth = True
-
-    s = poplib.POP3('mail.mukogawa.or.jp')
-    s.user(user)
     try:
+        s = poplib.POP3('mail.mukogawa.or.jp')
+        s.user(user)
         s.pass_(passwd)
+        s.quit()        
     except Exception as e:
         auth = False
-    s.quit()
 
     return auth
 ################################################################################
