@@ -4,7 +4,9 @@
  # hidekuno@gmail.com
  #
  #}
-
+    {% if app.error_message != '' %}
+        <center><h4 style="color:red">{{ app.error_message }}</h4></center>
+    {% endif %}
     <center>
     <div class="footer">
       <p>&copy; Kuno Shoten,Inc.All Rights Reserved.</p>
