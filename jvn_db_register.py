@@ -264,6 +264,7 @@ class JvnVulnDetailInfo(object):
     def __init__(self,dao):
         self.dao = dao
         self.dao.cursor.execute("truncate table jvn_mainte_work")
+        self.dao.cursor.execute("truncate table jvn_cwe_work")
 
     ################################################################################
     # URLを取得する
@@ -281,9 +282,17 @@ class JvnVulnDetailInfo(object):
             return '{http://jvn.jp/vuldef/}' + name
 
         work = []
+        work_cwe = []
         for e in root.findall(jvn_path("Vulinfo")):
             work.append([e.find(jvn_path('VulinfoID')).text, e.find(jvn_path('VulinfoData')).find(jvn_path('DatePublic')).text])
+            for r in e.find(jvn_path('VulinfoData')).find(jvn_path('Related')).findall(jvn_path('RelatedItem')):
+                if r.attrib['type'] == "cwe":
+                    work_cwe.append([e.find(jvn_path('VulinfoID')).text,
+                                     r.find(jvn_path('VulinfoID')).text,
+                                     r.find(jvn_path('Title')).text])
+
         self.dao.insert_mainte_work(work)
+        self.dao.insert_cwe_work(work_cwe)
     ################################################################################
     # mainから呼ばれる処理
     ################################################################################
@@ -301,6 +310,7 @@ class JvnVulnDetailInfo(object):
                 jvn.download()
                 del params[:]
         self.dao.update_public_date()
+        self.dao.update_cwe()
     ################################################################################
     # クローズ
     ################################################################################
@@ -424,7 +434,16 @@ class RegisterDAO(object):
         sql = "insert into jvn_mainte_work(identifier, public_date) values (%s, %s)"
         for row in rows:
             self.cursor.execute(sql, tuple(row))
-        logging.info(str(len(rows)) + "counts")
+        logging.info(str(len(rows)) + " public_date counts")
+
+    ################################################################################
+    # メンテナンス用テーブルへ登録
+    ################################################################################
+    def insert_cwe_work(self, rows):
+        sql = "insert into jvn_cwe_work(identifier, cweid, cwetitle) values (%s, %s, %s)"
+        for row in rows:
+            self.cursor.execute(sql, tuple(row))
+        logging.info(str(len(rows)) + " cwe counts")
 
     ################################################################################
     # 発見日を登録
@@ -433,6 +452,17 @@ class RegisterDAO(object):
         sql = """update jvn_vulnerability a
                  set    public_date = b.public_date
                  from   jvn_mainte_work as b
+                 where  a.identifier = b.identifier;"""
+        self.cursor.execute(sql)
+        self.connection.commit()
+
+    ################################################################################
+    # 脆弱性タイプを登録
+    ################################################################################
+    def update_cwe(self):
+        sql = """update jvn_vulnerability a
+                 set    cweid = b.cweid, cwetitle=b.cwetitle
+                 from   jvn_cwe_work as b
                  where  a.identifier = b.identifier;"""
         self.cursor.execute(sql)
         self.connection.commit()
