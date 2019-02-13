@@ -42,16 +42,34 @@ def jvndb(filename):
         for cpe in item.findall(mod_sec_path('cpe')):
             print("%s\t%s" % (identifier,cpe.text),file=sys.stderr)
 
-def jvndb_detail(filename):
-    def jvn_path(name):
-        return '{http://jvn.jp/vuldef/}' + name
+def jvn_path(name):
+    return '{http://jvn.jp/vuldef/}' + name
 
+def jvndb_detail(filename):
     elem = ElementTree.parse(open(filename)).getroot()
     for e in elem.findall(jvn_path("Vulinfo")):
         print("%s\t%s" % (e.find(jvn_path('VulinfoID')).text, e.find(jvn_path('VulinfoData')).find(jvn_path('DatePublic')).text))
 
-#for y in range(1998,2019):
-    #jvndb('jvndb_' + str(y) + '.rdf')
-#    jvndb_detail('jvndb_detail_' + str(y) + '.rdf')
-y = 2018
-jvndb_detail('jvndb_detail_' + str(y) + '.rdf')
+def jvndb_detail_cwe(filename):
+    elem = ElementTree.parse(open(filename)).getroot()
+    for e in elem.findall(jvn_path("Vulinfo")):
+        cwe_kind = False
+        for r in e.find(jvn_path('VulinfoData')).find(jvn_path('Related')).findall(jvn_path('RelatedItem')):
+            if r.attrib['type'] == "cwe":
+                print("%s\t%s\t%s" % (e.find(jvn_path('VulinfoID')).text,
+                                              r.find(jvn_path('VulinfoID')).text,
+                                              r.find(jvn_path('Title')).text))
+
+def jvndb_detail_nocwe(filename):
+    elem = ElementTree.parse(open(filename)).getroot()
+    for e in elem.findall(jvn_path("Vulinfo")):
+        cwe_kind = False
+        for r in e.find(jvn_path('VulinfoData')).find(jvn_path('Related')).findall(jvn_path('RelatedItem')):
+            if r.attrib['type'] == "cwe":
+                cwe_kind = True
+        if not cwe_kind:
+            print("%s\t%s" % (e.find(jvn_path('VulinfoID')).text,
+                              e.find(jvn_path('VulinfoData')).find(jvn_path('Title')).text))
+
+for y in range(1998,2020):
+    jvndb_detail_cwe('jvndb_detail_' + str(y) + '.rdf')
