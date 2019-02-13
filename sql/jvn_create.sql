@@ -8,6 +8,7 @@
 -- オブジェクトのクリア
 -- ========================================================================
 DROP TABLE IF EXISTS jvn_vendor;
+DROP TABLE IF EXISTS jvn_vendor_work;
 DROP TABLE IF EXISTS jvn_product;
 DROP TABLE IF EXISTS jvn_product_work;
 DROP TABLE IF EXISTS jvn_vulnerability;
@@ -15,6 +16,8 @@ DROP TABLE IF EXISTS jvn_vulnerability_detail;
 DROP TABLE IF EXISTS jvn_vulnerability_work;
 DROP TABLE IF EXISTS jvn_vulnerability_detail_work;
 DROP TABLE IF EXISTS jvn_account;
+DROP TABLE IF EXISTS jvn_mainte_work;
+DROP TABLE IF EXISTS jvn_cwe_work;
 
 DROP INDEX IF EXISTS jvn_vendor_idx_1;
 DROP INDEX IF EXISTS jvn_product_idx_1;
@@ -62,6 +65,8 @@ CREATE TABLE jvn_vulnerability (
   issued_date   timestamp        NOT NULL,
   modified_date timestamp        NOT NULL,
   public_date   timestamp,
+  cweid         varchar(32),
+  cwetitle      text,
   ticket_modified_date timestamp
 );
 -- --------------------- 脆弱性情報(ワークテーブル) --------
@@ -89,6 +94,14 @@ CREATE TABLE jvn_mainte_work (
   identifier    varchar(32)      NOT NULL PRIMARY KEY,
   public_date   timestamp
 );
+
+-- --------------------- 脆弱性情報(ワークテーブル) --------
+CREATE TABLE jvn_cwe_work (
+  identifier    varchar(32),
+  cweid         varchar(32),
+  cwetitle      text
+);
+
 -- --------------------- アカウント情報 --------------------
 CREATE TABLE jvn_account (
   user_id       varchar(32)    NOT NULL PRIMARY KEY,
