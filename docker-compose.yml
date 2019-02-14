@@ -10,6 +10,7 @@ postgres:
     - ./:/var/jvn
   environment:
     - "TZ=Japan"
+    - "LANG=ja_JP.UTF-8"
 
 plt:
   build: .
