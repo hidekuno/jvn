@@ -17,8 +17,9 @@ import configparser
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import numpy as np
+
 ################################################################################
-# 定数
+# const configuration
 ################################################################################
 # 設定ファイルの取り込み
 config = configparser.SafeConfigParser()
@@ -34,10 +35,15 @@ PORT = int(config.get('plt','port'))
 font = {'family' : 'VL Gothic'}
 ml.rc('font', **font)
 plt.rcParams['figure.figsize'] = 12.0,6.0
+
 ################################################################################
-# 棒グラフ
+# core logic
 ################################################################################
 def makeDataFrameYear():
+    """年別脆弱性件数を取得
+
+    脆弱性発見日・IPA公表日の件数を取得する
+    """
     connection = psycopg2.connect(**CONNECTION_CONFIG)
 
     stmt = """select y, y as yyyy, count(y) as cnt
@@ -55,6 +61,10 @@ def makeDataFrameYear():
     return df
 
 def makeBarChartOld(hfd,df):
+    """棒グラフ表示
+
+    プロトタイプ版を実装した(初版)
+    """
 
     df.plot.bar(width=0.8)
     plt.legend(['発表日','IPA公表日'], fontsize=14)
@@ -65,6 +75,10 @@ def makeBarChartOld(hfd,df):
     plt.savefig(hfd, format='png')
 
 def makeBarChart(hfd,df):
+    """棒グラフ表示
+
+    UI用はこちらの実装
+    """
 
     plt.figure()
     plt.tick_params(labelsize=10)
@@ -75,18 +89,20 @@ def makeBarChart(hfd,df):
     left = np.arange(len(df))
     space = 0.4
 
-    p1 = plt.bar(left,       df['cnt'], color='blue', width=space, align='center')
-    p2 = plt.bar(left+space, df['icnt'],color='red',  width=space, align='center')
+    p1 = plt.bar(left,       df['cnt'], color='#273CC5', width=space, align='center')
+    p2 = plt.bar(left+space, df['icnt'],color='#C31F53', width=space, align='center')
 
     plt.xticks(left + space/2, df['yyyy'])
     plt.legend((p1,p2), ("発見日", "IPA公表日"), fontsize=10)
 
     plt.savefig(hfd, format='png')
     plt.close(fig)
-################################################################################
-# 折れ線グラフ
-################################################################################
+
 def makeLineChartOld(hfd, df):
+    """折れ線グラフ表示
+
+    プロトタイプ版を実装した(初版)
+    """
 
     df.plot.line()
     plt.legend(['発表日','IPA公表日'], fontsize=14)
@@ -97,8 +113,12 @@ def makeLineChartOld(hfd, df):
     plt.savefig(hfd, format='png')
 
 def makeLineChart(hfd, df):
-    plt.figure()
+    """折れ線グラフ表示
 
+    UI用はこちらの実装
+    """
+
+    plt.figure()
     plt.tick_params(labelsize=10)
     plt.xlabel('年', fontsize=10)
     plt.ylabel('件数', fontsize=10)
@@ -110,10 +130,12 @@ def makeLineChart(hfd, df):
 
     plt.savefig(hfd, format='png')
     plt.close(fig)
-################################################################################
-# http handler
-################################################################################
+
 class JvnImageHandler(BaseHTTPRequestHandler):
+    """Web サーバを実装
+
+    API機能を提供する
+    """
     def do_GET(self):
         self.send_response(200)
 
