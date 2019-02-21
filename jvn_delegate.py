@@ -9,10 +9,13 @@ from wsgi_handler import get_session_key
 class JvnState(object):
     def __init__(self):
         pass
-################################################################################
-# ページ処理
-################################################################################
+
 class JvnDelegate(object):
+    """グラフ表示処理
+
+    画像作成サーバに処理を委譲する
+    """
+
     def do_chart(self, uri, req, session):
         self.title_name = 'JVN 脆弱性発生件数'
         url = req.host_url
