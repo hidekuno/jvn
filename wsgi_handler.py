@@ -272,7 +272,7 @@ def application(env, start_response):
         chain = urlmap.URLMap(logout)
         chain['/jvn_logout'] = logout
         l = [os.path.basename(x) for x in glob.glob(os.path.join(app_path, 'jvn*.py'))]
-        for obj in [file.replace('.py','') for file in l ]:
+        for obj in [f.replace('.py','') for f in l ]:
             m = __import__(obj, globals(), locals(), [], -1)
             for k in m.__dict__.keys():
                 cls = m.__dict__[k]

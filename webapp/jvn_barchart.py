@@ -7,10 +7,10 @@
 #
 from wsgi_handler import JvnApplication
 from jvn_delegate import JvnDelegate
-################################################################################
-# グラフ表示
-################################################################################
+
 class Index(JvnApplication,JvnDelegate):
+    """グラフ表示(縦棒)
+    """
     def is_token_valid(self, req, session):
         return True
 
