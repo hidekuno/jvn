@@ -12,10 +12,10 @@ from sqlalchemy.ext.declarative import declarative_base
 import lepl.apps.rfc3696
 
 Base = declarative_base()
-################################################################################
-# アカウント情報(Model)
-################################################################################
+
 class Account(Base):
+    """アカウント情報(Model)
+    """
     __tablename__ = 'jvn_account'
  
     user_id    = Column(String, nullable=False, primary_key=True)
@@ -58,10 +58,10 @@ class Account(Base):
             return (False, "メールアドレスの形式が正しくありません。")
 
         return True, ''
-################################################################################
-# 製品情報(Model)
-################################################################################
+
 class Product(Base):
+    """製品情報(Model)
+    """
     __tablename__ = 'jvn_product'
 
     pid       = Column(Integer, nullable=False)
@@ -71,10 +71,9 @@ class Product(Base):
     fs_manage = Column(String,  nullable=False)
     edit      = Column(SmallInteger)
 
-################################################################################
-# 脆弱性情報(Model)
-################################################################################
 class Vulnerability(Base):
+    """脆弱性情報(Model)
+    """
     __tablename__ = 'jvn_vulnerability'
 
     identifier           = Column(String,  nullable=False, primary_key=True)
@@ -85,19 +84,18 @@ class Vulnerability(Base):
     modified_date        = Column(DateTime,  nullable=False)
     ticket_modified_date = Column(DateTime)
 
-################################################################################
-# トランザクション処理
-################################################################################
 def do_transaction(func,app):
+    """トランザクション処理
+    """
     ret = None
     engine = None
 
     try:
-        dburl = 'postgres://%s:%s@%s:%s/%s' % (app.config.get('db','user')
-                                               ,app.config.get('db','password')
-                                               ,app.config.get('db','host')
-                                               ,app.config.get('db','port')
-                                               ,app.config.get('db','database'))
+        dburl = 'postgres://%s:%s@%s:%s/%s' % (app.config.get('db','user'),
+                                               app.config.get('db','password'),
+                                               app.config.get('db','host'),
+                                               app.config.get('db','port'),
+                                               app.config.get('db','database'))
         engine = create_engine(dburl)
         Session = orm.scoped_session(orm.sessionmaker(bind=engine, expire_on_commit=False))
         db = Session()
