@@ -20,20 +20,22 @@ import ConfigParser
 import argparse
 
 TMP_DIR      = os.path.join(os.sep,'tmp')
+
 ################################################################################
-# 各メソッドに開始・終了ログを出力を行うようにする。
+# core logic
 ################################################################################
 def log(f):
+    """各メソッドに開始・終了ログを出力を行うようにする。
+    """
     def _(*arg):
          logging.info(f.func_name + "() start.")
          f(*arg)
          logging.info(f.func_name + "() end.")
     return _
-################################################################################
-# JVNの例外クラス
-################################################################################
-class JvnException(Exception):
 
+class JvnException(Exception):
+    """例外クラス
+    """
     def __init__(self, jvn_status):
         logging.debug(jvn_status.get("version"))
         logging.debug(jvn_status.get("retCd"))
@@ -45,21 +47,18 @@ class JvnException(Exception):
 
     def __str__(self):
         return "JVN-ERROR"
-################################################################################
-# path名を取得する
-################################################################################
+
 def myjvn_path(name, item):
+    """path名を取得する
+    """
     return './/{http://jvndb.jvn.jp/myjvn/%s}%s' % (name, item)
 
-################################################################################
-# 製品情報ファイルのデータ処理
-################################################################################
 class JvnAPI(object):
-
-    ################################################################################
-    # コンストラクタ
-    ################################################################################
+    """脆弱性情報のデータ処理
+    """
     def __init__(self, jvn, config, page_count=None):
+        """コンストラクタ
+        """
         self.jvn = jvn
         self.max_count  = int(config.get('api','max_count'))
         self.page_count = int(config.get('api','page_count'))
@@ -67,13 +66,11 @@ class JvnAPI(object):
 
         if page_count is not None:
             self.page_count = page_count
-    ################################################################################
-    # Jvnからレスポンスををダウンロードする
-    # for child in item:
-    #    print(child.tag, child.attrib, child.text)
-    ################################################################################
+
     @log
     def download(self):
+        """Jvnからレスポンスををダウンロードする
+        """
         for s in range(1, self.max_count, self.page_count):
 
             param ="&".join(['startItem' + '=' + str(s), 'maxCountItem'  + '=' + str(self.page_count)])
@@ -96,97 +93,59 @@ class JvnAPI(object):
 
             if (check_count[1] + check_count[2]) > check_count[0]:
                 break
-    ################################################################################
-    # クローズ
-    ################################################################################
+
     def release(self):
+        """クローズ
+        """
         self.jvn.release()
 
-################################################################################
-# ベンダ情報ファイルのデータ処理
-################################################################################
 class JvnVendor(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """ベンダ情報ファイルのデータ処理
+    """
     def __init__(self):
         # 日本語で出力できるようにする。
         self.vender_fd  = open(os.path.join(TMP_DIR, 'jvn_vendor_work.csv'),'w')
         self.vender_fd  = codecs.lookup('utf_8')[-1](self.vender_fd)
 
-    ################################################################################
-    # Jvnから製品情報をダウンロードする
-    ################################################################################
     def get_method(self):
         return 'method=getVendorList'
 
-    ################################################################################
-    # Jvnから製品情報をダウンロードする
-    ################################################################################
     def do_logic(self,root):
         for vendor in root.findall(myjvn_path('Results', 'Vendor')):
             self.vender_fd.write("%s\t%s\t%s\n" % (vendor.get('vid'),vendor.get('vname'),vendor.get('cpe')))
 
-    ################################################################################
-    # クローズ
-    ################################################################################
     def release(self):
         self.vender_fd.close()
 
-################################################################################
-# 製品情報ファイルのデータ処理
-################################################################################
 class JvnProduct(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """製品情報ファイルのデータ処理
+    """
     def __init__(self):
-
         # 日本語で出力できるようにする。
         self.product_fd = open(os.path.join(TMP_DIR, 'jvn_product_work.csv'),'w')
         self.product_fd = codecs.lookup('utf_8')[-1](self.product_fd)
 
-    ################################################################################
-    # Jvnから製品情報をダウンロードする
-    ################################################################################
     def get_method(self):
         return 'method=getProductList'
 
-    ################################################################################
-    # Jvnから製品情報をダウンロードする
-    ################################################################################
     def do_logic(self,root):
         for vendor in root.findall(myjvn_path('Results', 'Vendor')):
             for product in vendor:
-                self.product_fd.write("%s\t%s\t%s\t%s\n" % (product.get('pid')
-                                                            ,product.get('pname')
-                                                            ,product.get('cpe')
-                                                            ,vendor.get('vid')))
-                
-    ################################################################################
-    # デバッグ用関数
-    ################################################################################
+                self.product_fd.write("%s\t%s\t%s\t%s\n" % (product.get('pid'),
+                                                            product.get('pname'),
+                                                            product.get('cpe'),
+                                                            vendor.get('vid')))
+    def release(self):
+        self.product_fd.close()
+
     def debug_tag(self,element):
         for i in element.getiterator():
             if i.tag:
                 print('tag : '+ i.tag)
 
-    ################################################################################
-    # クローズ
-    ################################################################################
-    def release(self):
-        self.product_fd.close()
-
-################################################################################
-# 脆弱性情報ファイルのデータ処理
-################################################################################
 class JvnVulnerability(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """脆弱性情報ファイルのデータ処理
+    """
     def __init__(self,date_range):
         self.date_range = date_range
 
@@ -197,19 +156,14 @@ class JvnVulnerability(object):
         self.v_fd  = codecs.lookup('utf_8')[-1](self.v_fd)
         self.vd_fd = codecs.lookup('utf_8')[-1](self.vd_fd)
 
-    ################################################################################
-    # URLを取得する
-    ################################################################################
     def get_method(self):
-        params = ['method=getVulnOverviewList'
-                  ,'rangeDatePublic=n'
-                  ,'rangeDatePublished=' + self.date_range
-                  ,'rangeDateFirstPublished=n']
+        params = ['method=getVulnOverviewList',
+                  'rangeDatePublic=n',
+                  'rangeDatePublished=' + self.date_range,
+                  'rangeDateFirstPublished=n']
 
         return '&'.join(params)
-    ################################################################################
-    # Jvnから製品情報をダウンロードする
-    ################################################################################
+
     def do_logic(self,root):
 
         items = root.findall(self.rss_path('item'))
@@ -224,19 +178,16 @@ class JvnVulnerability(object):
 
             title       = title.replace(u'\\', u'￥')
             description = description.replace(u'\\', u'￥')
-            self.v_fd.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (identifier
-                                                          ,title
-                                                          ,link
-                                                          ,description
-                                                          ,issued_date
-                                                          ,modified_date))
+            self.v_fd.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (identifier,
+                                                          title,
+                                                          link,
+                                                          description,
+                                                          issued_date,
+                                                          modified_date))
 
             for cpe in item.findall(self.mod_sec_path('cpe')):
                 self.vd_fd.write("%s\t%s\n" % (identifier,cpe.text))
 
-    ################################################################################
-    # 各データの完全パスを求める
-    ################################################################################
     def rss_path(self,name):
         return '{http://purl.org/rss/1.0/}' + name
 
@@ -246,37 +197,23 @@ class JvnVulnerability(object):
     def dc_terms_path(self,name):
         return '{http://purl.org/dc/terms/}' + name
 
-    ################################################################################
-    # クローズ
-    ################################################################################
     def release(self):
         self.v_fd.close()
         self.vd_fd.close()
 
-################################################################################
-# 脆弱性詳細情報
-################################################################################
 class JvnVulnDetailInfo(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """脆弱性詳細情報
+    """
     def __init__(self,dao):
         self.dao = dao
         self.dao.cursor.execute("truncate table jvn_mainte_work")
         self.dao.cursor.execute("truncate table jvn_cwe_work")
 
-    ################################################################################
-    # URLを取得する
-    ################################################################################
     def get_method(self):
         params = ['method=getVulnDetailInfo'
                   ,'vulnId=' + '+'.join(self.vulner)]
         return '&'.join(params)
 
-    ################################################################################
-    # DBへ登録する
-    ################################################################################
     def do_logic(self,root):
         def jvn_path(name):
             return '{http://jvn.jp/vuldef/}' + name
@@ -293,10 +230,10 @@ class JvnVulnDetailInfo(object):
 
         self.dao.insert_mainte_work(work)
         self.dao.insert_cwe_work(work_cwe)
-    ################################################################################
-    # mainから呼ばれる処理
-    ################################################################################
+
     def core_proc(self):
+        """mainから呼ばれる処理
+        """
         rows = self.dao.select_jvn_vulnerability()
 
         params = []
@@ -311,41 +248,31 @@ class JvnVulnDetailInfo(object):
                 del params[:]
         self.dao.update_public_date()
         self.dao.update_cwe()
-    ################################################################################
-    # クローズ
-    ################################################################################
+
     def release(self):
         pass
-################################################################################
-# データベースオブジェクト
-################################################################################
 class RegisterDAO(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """DAO Object
+    """
     def __init__(self,config):
-        self.connection = psycopg2.connect(database =config.get('db','database')
-                                           ,user    =config.get('db','user')
-                                           ,password=config.get('db','password')
-                                           ,host    =config.get('db','host')
-                                           ,port    =config.get('db','port'))
+        self.connection = psycopg2.connect(database =config.get('db','database'),
+                                           user     =config.get('db','user'),
+                                           password =config.get('db','password'),
+                                           host     =config.get('db','host'),
+                                           port     =config.get('db','port'))
 
         self.cursor = self.connection.cursor()
         self.cursor.execute("SET work_mem TO '20MB'")
-    ################################################################################
-    # 終了処理
-    ################################################################################
+
     @log
     def close( self ):
         self.cursor.close()
         self.connection.close()
 
-    ################################################################################
-    # CSVファイルから調査結果を登録する
-    ################################################################################
     @log
     def insert_work(self):
+        """CSVファイルから調査結果を登録する
+        """
         table_names = ["jvn_vendor_work","jvn_product_work","jvn_vulnerability_work","jvn_vulnerability_detail_work"]
 
         for table_name in table_names:
@@ -361,11 +288,10 @@ class RegisterDAO(object):
 
         self.connection.commit()
 
-    ################################################################################
-    # ワークテーブルからnfs_disk_usage
-    ################################################################################
     @log
     def merge_master(self):
+        """ベンダー情報、製品情報の更新
+        """
         sql = """WITH upsert AS
             (UPDATE  jvn_vendor
               SET    vname = jvn_vendor_work.vname  FROM jvn_vendor_work
@@ -387,12 +313,10 @@ class RegisterDAO(object):
         self.cursor.execute(sql)
         self.connection.commit()
 
-    ################################################################################
-    # ワークテーブルからnfs_disk_usage
-    ################################################################################
     @log
     def merge_vulnerability(self):
-
+        """脆弱性情報の更新
+        """
         sql_statemenst = [
             """WITH upsert AS
             (UPDATE  jvn_vulnerability
@@ -419,36 +343,32 @@ class RegisterDAO(object):
 
         self.connection.commit()
 
-    ################################################################################
-    # 発見日が未登録のものを抽出
-    ################################################################################
     def select_jvn_vulnerability(self):
+        """発見日が未登録のものを抽出
+        """
         sql = "select identifier from  jvn_vulnerability where public_date is null;"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
-    ################################################################################
-    # メンテナンス用テーブルへ登録
-    ################################################################################
     def insert_mainte_work(self, rows):
+        """メンテナンス用テーブルへ登録
+        """
         sql = "insert into jvn_mainte_work(identifier, public_date) values (%s, %s)"
         for row in rows:
             self.cursor.execute(sql, tuple(row))
         logging.info(str(len(rows)) + " public_date counts")
 
-    ################################################################################
-    # メンテナンス用テーブルへ登録
-    ################################################################################
     def insert_cwe_work(self, rows):
+        """メンテナンス用テーブルへ登録
+        """
         sql = "insert into jvn_cwe_work(identifier, cweid, cwetitle) values (%s, %s, %s)"
         for row in rows:
             self.cursor.execute(sql, tuple(row))
         logging.info(str(len(rows)) + " cwe counts")
 
-    ################################################################################
-    # 発見日を登録
-    ################################################################################
     def update_public_date(self):
+        """発見日を登録
+        """
         sql = """update jvn_vulnerability a
                  set    public_date = b.public_date
                  from   jvn_mainte_work as b
@@ -456,25 +376,19 @@ class RegisterDAO(object):
         self.cursor.execute(sql)
         self.connection.commit()
 
-    ################################################################################
-    # 脆弱性タイプを登録
-    ################################################################################
     def update_cwe(self):
+        """脆弱性タイプを登録
+        """
         sql = """update jvn_vulnerability a
                  set    cweid = b.cweid, cwetitle=b.cwetitle
                  from   jvn_cwe_work as b
                  where  a.identifier = b.identifier;"""
         self.cursor.execute(sql)
         self.connection.commit()
-################################################################################
-# ログ初期化
-################################################################################
+
 def init_logger():
-
-    # 本来は設定ファイルを外出しにするのが王道だけど、管理するファイルをすくなくするため
-    # gdgdとこの関数を定義する。  
-    # logging.config.fileConfig("hogehoge_log.cnf") 
-
+    """ログ初期化
+    """
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -492,16 +406,15 @@ def init_logger():
 
     # 致命的なエラーはメール送信する
     mh = logging.handlers.SMTPHandler(
-         mailhost='localhost'
-         ,fromaddr='hidekuno@gmail.com'
-         ,toaddrs=['hidekuno@gmail.com']
-         ,subject='jvn_db_register.py system error'
-         )
+        mailhost='localhost',
+        fromaddr='hidekuno@gmail.com',
+        toaddrs=['hidekuno@gmail.com'],
+        subject='jvn_db_register.py system error')
     mh.setLevel(logging.CRITICAL)
     logger.addHandler(mh)
 
 ################################################################################
-# メインロジック
+# main
 ################################################################################
 if __name__ == "__main__":
 
@@ -520,19 +433,19 @@ if __name__ == "__main__":
 
         date_range = "m" if args.month == True  else "w"
         # 製品情報,JVN脆弱性情報の取り込み
-        jvns = [ JvnAPI(JvnVendor(),  config)
-                ,JvnAPI(JvnProduct(), config)
-                ,JvnAPI(JvnVulnerability(date_range), config, page_count=50)]
+        jvns = [JvnAPI(JvnVendor(),  config),
+                JvnAPI(JvnProduct(), config),
+                JvnAPI(JvnVulnerability(date_range), config, page_count=50)]
 
         if args.fiscal_year:
             def get_method_fiscal_year():
-                params = ['method=getVulnOverviewList'
-                          ,'datePublicStartY=' + str(args.fiscal_year)
-                          ,'datePublicStartM=4'
-                          ,'datePublicEndY=' + str(args.fiscal_year+1)
-                          ,'datePublicEndM=3'
-                          ,'rangeDatePublished=n'
-                          ,'rangeDateFirstPublished=n']
+                params = ['method=getVulnOverviewList',
+                          'datePublicStartY=' + str(args.fiscal_year),
+                          'datePublicStartM=4',
+                          'datePublicEndY=' + str(args.fiscal_year+1),
+                          'datePublicEndM=3',
+                          'rangeDatePublished=n',
+                          'rangeDateFirstPublished=n']
                 return '&'.join(params)
             jvns[2].jvn.get_method = get_method_fiscal_year
 
