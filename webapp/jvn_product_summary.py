@@ -7,11 +7,10 @@
 #
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
         self.app = app
 
@@ -27,17 +26,15 @@ class JvnDAO(object):
         rows = self.app.cursor.fetchall()
         return rows
 
-################################################################################
-# セッションデータ
-################################################################################
 class JvnState(object):
+    """session data object
+    """
     def __init__(self):
         pass
 
-################################################################################
-# 初期表示処理
-################################################################################
 class Index(JvnApplication):
+    """初期表示処理
+    """
     def is_token_valid(self, req, session):
         return True
 
