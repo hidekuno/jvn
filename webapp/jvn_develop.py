@@ -11,11 +11,10 @@ from jvn_model import do_transaction
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
 from wsgi_handler import fs_manage_code2ui
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
         self.app = app
 
@@ -31,18 +30,15 @@ class JvnDAO(object):
         rows = self.app.cursor.fetchall()
         return rows
 
-################################################################################
-# セッションデータ
-################################################################################
 class JvnState(object):
+    """session data object
+    """
     def __init__(self, total_count):
         self.total_count = total_count
 
-################################################################################
-# 依頼チェック表示処理 (保守G使用)
-################################################################################
 class Index(JvnApplication):
-
+    """依頼チェック表示処理
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -57,11 +53,9 @@ class Index(JvnApplication):
         # 戻るボタンを非表示にする
         self.backlink = None
 
-################################################################################
-# チェック処理 (保守G使用)
-################################################################################
 class Update(JvnApplication):
-
+    """チェック処理
+    """
     def do_logic(self, req, res, session):
 
         self.jinja_html_file = 'jvn_develop_complete.j2'
@@ -81,10 +75,10 @@ class Update(JvnApplication):
                 rec.edit = 0
                 rec.fs_manage = req.params[fs_manage]
 
-                records.append((fs_manage_code2ui(req.params[fs_manage])
-                                ,req.params[vendor]
-                                ,req.params[product]
-                                ,req.params[cpe]))
+                records.append((fs_manage_code2ui(req.params[fs_manage]),
+                                req.params[vendor],
+                                req.params[product],
+                                req.params[cpe]))
                 i += 1
             return records
         self.result = do_transaction(do_execute,self)

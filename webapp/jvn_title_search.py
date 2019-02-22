@@ -10,11 +10,10 @@ import jvn_pagination
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
 from wsgi_handler import make_like
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
         self.app = app
 
@@ -54,31 +53,22 @@ class JvnDAO(object):
         rows = self.app.cursor.fetchall()
         return rows
 
-################################################################################
-# セッションデータ
-################################################################################
 class JvnState(JvnPage):
+    """session data object
+    """
     def __init__(self):
         super(self.__class__, self).__init__()
         self.keyword     = ''
 
-################################################################################
-# タイトル製品検索
-################################################################################
 class TitleListLogic(jvn_pagination.SearchModule):
-
-    ################################################################################
-    # 変数の初期化
-    ################################################################################
+    """タイトル製品検索
+    """
     def initialize(self):
         # インスタンス変数の初期化
         self.jinja_html_file = 'jvn_title_search.j2'
         self.MAX_TOTAL_COUNT = 1000
         self.dao = JvnDAO(self)
 
-    ################################################################################
-    # UIオブジェクトの作成
-    ################################################################################
     def make_ui(self, req, session):
         # sessionとrequestのマージ処理
         self.ui = session.get(self.pager_app)
@@ -101,10 +91,9 @@ class Next(jvn_pagination.Next,TitleListLogic): pass
 class Prev(jvn_pagination.Prev,TitleListLogic): pass
 class Back(jvn_pagination.Back,TitleListLogic): pass
 
-################################################################################
-# メンテナンスボタン表示処理 (保守G使用)
-################################################################################
 class Maintenance(jvn_pagination.Maintenance):
+    """メンテナンスボタン表示処理 (保守G使用)
+    """
     def app_name(self):
         return 'jvn_title_search'
 

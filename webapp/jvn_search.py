@@ -10,11 +10,10 @@ import jvn_pagination
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
 from wsgi_handler import make_like
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
         self.app = app
 
@@ -32,9 +31,9 @@ class JvnDAO(object):
 
         sql_count = """select count(*) as c from jvn_vendor a, jvn_product b
                       where (a.vid = b.vid ) and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s)"""
-        self.app.cursor.execute(sql_count,(make_like(self.app.ui.vendor)
-                                          ,make_like(self.app.ui.product)
-                                          ,self.get_fs_manage()))
+        self.app.cursor.execute(sql_count,(make_like(self.app.ui.vendor),
+                                           make_like(self.app.ui.product),
+                                           self.get_fs_manage()))
         count = self.app.cursor.fetchone()
         return count[0]
 
@@ -45,11 +44,11 @@ class JvnDAO(object):
                     where (a.vid = b.vid ) and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s) 
                     order by b.vid, b.pid limit %s OFFSET %s"""
 
-        self.app.cursor.execute(sqlfmt,(make_like(self.app.ui.vendor)
-                                        ,make_like(self.app.ui.product)
-                                        ,self.get_fs_manage()
-                                        ,PAGE_COUNT
-                                        ,offset * PAGE_COUNT,))
+        self.app.cursor.execute(sqlfmt,(make_like(self.app.ui.vendor),
+                                        make_like(self.app.ui.product),
+                                        self.get_fs_manage(),
+                                        PAGE_COUNT,
+                                        offset * PAGE_COUNT,))
         rows = self.app.cursor.fetchall()
         return rows
 
@@ -60,40 +59,31 @@ class JvnDAO(object):
                     where (a.vid = b.vid ) 
                     and (vname ilike %s) and (pname ilike %s) and (b.fs_manage = %s)"""
 
-        self.app.cursor.execute(sqlfmt,(make_like(jvn_state.vendor)
-                                       ,make_like(jvn_state.product)
-                                       ,jvn_state.fs_manage))
+        self.app.cursor.execute(sqlfmt,(make_like(jvn_state.vendor),
+                                        make_like(jvn_state.product),
+                                        jvn_state.fs_manage))
 
         rows = self.app.cursor.fetchall()
         return rows
 
-################################################################################
-# セッションデータ
-################################################################################
 class JvnState(JvnPage):
+    """session data object
+    """
     def __init__(self):
         super(self.__class__, self).__init__()
         self.vendor      = ''
         self.product     = ''
         self.fs_manage   = 'undefine'
 
-################################################################################
-# 製品検索
-################################################################################
 class ProductListLogic(jvn_pagination.SearchModule):
-
-    ################################################################################
-    # 変数の初期化
-    ################################################################################
+    """製品検索
+    """
     def initialize(self):
         # インスタンス変数の初期化
         self.jinja_html_file = 'jvn_search.j2'
         self.MAX_TOTAL_COUNT = 1000
         self.dao = JvnDAO(self)
 
-    ################################################################################
-    # UIオブジェクトの作成
-    ################################################################################
     def make_ui(self, req, session):
 
         # sessionとrequestのマージ処理
@@ -132,10 +122,9 @@ class Next(jvn_pagination.Next,ProductListLogic): pass
 class Prev(jvn_pagination.Prev,ProductListLogic): pass
 class Back(jvn_pagination.Back,ProductListLogic): pass
 
-################################################################################
-# メンテナンスボタン表示処理 (保守G使用)
-################################################################################
 class Maintenance(jvn_pagination.Maintenance):
+    """メンテナンスボタン表示処理 (保守G使用)
+    """
     def app_name(self):
         return 'jvn_search'
 
