@@ -11,10 +11,10 @@ from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
 
 PAGE_COUNT     = 10
-################################################################################
-# ページ処理
-################################################################################
+
 class JvnPage(object):
+    """ページ処理
+    """
     def __init__(self):
         self.reset()
 
@@ -49,28 +49,15 @@ class JvnPage(object):
         else:
             self.is_display_next = False
 
-################################################################################
-# 検索表示
-################################################################################
 class SearchModule():
+    """検索表示
+    """
+    def initialize(self):pass
+    def make_ui(self, req, session):pass
 
-    ################################################################################
-    # 変数の初期化
-    ################################################################################
-    def initialize(self):
-        pass
-
-    ################################################################################
-    # UIオブジェクトの作成
-    ################################################################################
-    def make_ui(self, req, session):
-        pass
-
-    ################################################################################
-    # スケルトンロジック
-    ################################################################################
     def core_proc(self, req, session, func):
-
+        """スケルトンロジック
+        """
         # インスタンス変数の初期化
         self.pager_app       = get_session_key(req)
         self.result          = ()
@@ -106,11 +93,10 @@ class SearchModule():
 
         self.result = self.dao.get_records(self.ui.page)
         self.ui.set_control_page_button(self.result)
-################################################################################
-# 初期表示処理
-################################################################################
-class Index(JvnApplication):
 
+class Index(JvnApplication):
+    """初期表示処理
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -120,54 +106,45 @@ class Index(JvnApplication):
     def do_logic(self, req, res, session):
         self.core_proc(req, session, lambda : None)
 
-################################################################################
-# 初期表示処理
-################################################################################
 class Search(JvnApplication):
-
+    """検索処理
+    """
     def is_init_page(self):
         return True
 
     def do_logic(self, req, res, session):
         self.core_proc(req, session, lambda : None)
 
-################################################################################
-# 次ページ処理
-################################################################################
 class Next(JvnApplication):
-
+    """次ページ遷移
+    """
     def is_init_page(self):
         return False
 
     def do_logic(self, req, res, session):
         self.core_proc(req, session, lambda : self.ui.set_next_page())
 
-################################################################################
-# 前ページ処理
-################################################################################
 class Prev(JvnApplication):
-
+    """前ページ遷移
+    """
     def is_init_page(self):
         return False
 
     def do_logic(self, req, res, session):
         self.core_proc(req, session, lambda : self.ui.set_prev_page())
 
-################################################################################
-# 戻るページ遷移
-################################################################################
 class Back(JvnApplication):
-
+    """戻る（画面遷移処理)
+    """
     def is_init_page(self):
         return False
 
     def do_logic(self, req, res, session):
         self.core_proc(req, session, lambda : None)
 
-################################################################################
-# メンテナンスボタン表示処理 (保守G使用)
-################################################################################
 class Maintenance(JvnApplication):
+    """メンテナンスボタン表示処理 (保守用)
+    """
     def app_name(self):
         pass
 
