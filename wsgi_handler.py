@@ -37,15 +37,16 @@ TOKEN_KEY      = 'web_token'
 LOGIN_USER_KEY = 'jvn_user'
 SALT           = "JVN"
 JVN_SID        = "JVN_SID"
+
 ################################################################################
-# アプリケーション骨格処理
+# core logic
 ################################################################################
 class JvnApplication(object):
-
-    ################################################################################
-    # 初期化
-    ################################################################################
+    """アプリケーション骨格処理
+    """
     def __init__(self):
+        """コンストラクタ
+        """
         self.config = ConfigParser.SafeConfigParser()
         jvn_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -53,16 +54,15 @@ class JvnApplication(object):
         self.topuri          = "/vms"
         self.error_message   = ''
         self.exception       = None
-    ################################################################################
-    # Set Transaction Token
-    ################################################################################
+
     def save_token(self,session):
+        """Set Transaction Token
+        """
         self.web_token = session[TOKEN_KEY] = hashlib.md5( str(uuid.uuid4()) ).hexdigest()
 
-    ################################################################################
-    # Check Transaction Token
-    ################################################################################
     def is_token_valid(self, req, session):
+        """Check Transaction Token
+        """
         if TOKEN_KEY not in req.params:
             return False
 
@@ -70,10 +70,10 @@ class JvnApplication(object):
             raise Exception("セッションファイルが削除された可能性があります。")
 
         return (req.params[TOKEN_KEY] == session[TOKEN_KEY])
-    ################################################################################
-    # Check login
-    ################################################################################
+
     def check_login(self, req, session):
+        """Check login
+        """
         def select_user(db):
             return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY], passwd = hash_passwd(req.params['jvn_passwd'])).first()
 
@@ -98,11 +98,9 @@ class JvnApplication(object):
 
         return login_ok
 
-    ################################################################################
-    # コントロールロジック(後でエラーハンドルを書く try catchでrollbackとか)
-    ################################################################################
     def __call__(self, environ, start_response):
-
+        """Controller proc
+        """
         session = environ['paste.session.factory']()
         req = webob.Request(environ)
         res = webob.Response()
@@ -111,11 +109,11 @@ class JvnApplication(object):
         logging.info(session)
 
         try:
-            connection = psycopg2.connect(database =self.config.get('db','database')
-                                          ,user    =self.config.get('db','user')
-                                          ,password=self.config.get('db','password')
-                                          ,host    =self.config.get('db','host')
-                                          ,port    =self.config.get('db','port'))
+            connection = psycopg2.connect(database =self.config.get('db','database'),
+                                          user    =self.config.get('db','user'),
+                                          password=self.config.get('db','password'),
+                                          host    =self.config.get('db','host'),
+                                          port    =self.config.get('db','port'))
 
             self.cursor = connection.cursor()
 
@@ -160,12 +158,13 @@ class JvnApplication(object):
         res.content_length        = str(len(res.body))
 
         return res(environ,start_response)
-################################################################################
-# ユーザー情報
-################################################################################
-class JvnUser(object):
 
+class JvnUser(object):
+    """ユーザー情報
+    """
     def __init__(self,rows):
+        """ constructor
+        """
         if len(rows) == 1:
             self.user_id    = rows[0]
             self.user_name  = 'ゲスト'
@@ -178,11 +177,10 @@ class JvnUser(object):
             self.email      = rows[2]
             self.department = rows[3]
             self.privs      = rows[4]
-################################################################################
-# ユーザー認証処理
-################################################################################
-def auth_pop_user(user, passwd):
 
+def auth_pop_user(user, passwd):
+    """ユーザー認証処理
+    """
     auth = True
     try:
         s = poplib.POP3('mail.mukogawa.or.jp')
@@ -193,24 +191,21 @@ def auth_pop_user(user, passwd):
         auth = False
 
     return auth
-################################################################################
-# パスワードをハッシュ化する
-################################################################################
+
 def hash_passwd(passwd):
+    """パスワードをハッシュ化する
+    """
     return hashlib.md5(SALT + passwd).hexdigest()
 
-################################################################################
-# セッションキーを取得する
-################################################################################
 def get_session_key(req):
+    """セッションキーを取得する
+    """
     key = os.path.basename(os.path.dirname(req.path_qs))
     return key
 
-################################################################################
-# 製品の取り扱いコードをUI表示用に変換する
-################################################################################
 def fs_manage_code2ui(code):
-
+    """製品の取り扱いコードをUI表示用に変換する
+    """
     display_fs_manage = '未定義'
 
     if code == 'not_cover_item':
@@ -221,17 +216,14 @@ def fs_manage_code2ui(code):
 
     return display_fs_manage
 
-################################################################################
-# SQLのLike検索を付加した文字列を取得
-################################################################################
 def make_like(word):
+    """SQLのLike検索を付加した文字列を取得
+    """
     return word.replace(' ', '%') + '%'
 
-################################################################################
-# ログアウト処理
-################################################################################
 def logout(environ, start_response):
-
+    """ログアウト処理
+    """
     class UnknownApp(JvnApplication):
         def __init__(self):
             super(self.__class__, self).__init__()
@@ -249,15 +241,12 @@ def logout(environ, start_response):
     start_response('200 OK', [('Content-type', 'text/html')])
     return tmpl.render(app=UnknownApp()).encode("utf-8")
 
-################################################################################
-# wsgiハンドラー
-################################################################################
 def application(env, start_response):
-
-    ################################################################################
-    # アプリケーションチェック
-    ################################################################################
+    """wsgiハンドラー
+    """
     def is_application(cls):
+        """アプリケーションチェック
+        """
         if ('do_logic' in cls.__dict__ 
             and 'JvnApplication' in [x.__name__ for x in cls.__bases__ ]):
             return True
@@ -266,9 +255,7 @@ def application(env, start_response):
                 return is_application(x)
 
         return False
-    ################################################################################
-    # 本体ロジック
-    ################################################################################
+    ###########################本体ロジック#########################################
     try:
         jvn_path = os.path.abspath(os.path.dirname(__file__))
         app_path = os.path.join(jvn_path, 'webapp')
@@ -304,7 +291,7 @@ def application(env, start_response):
         return 'System Error \n' + str(e) + "\n" + traceback.format_exc()
 
 ################################################################################
-# 単体ではアプリケーションサーバーを起動する
+# main
 ################################################################################
 from wsgiref import simple_server
 if __name__ == '__main__':
