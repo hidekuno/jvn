@@ -11,11 +11,10 @@ from jvn_model import do_transaction
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
 from wsgi_handler import fs_manage_code2ui
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
         self.app = app
 
@@ -33,18 +32,15 @@ class JvnDAO(object):
         rows = self.app.cursor.fetchall()
         return rows
 
-################################################################################
-# セッションデータ
-################################################################################
 class JvnState(object):
+    """session data object
+    """
     def __init__(self, total_count):
         self.total_count = total_count
 
-################################################################################
-# 初期表示 (運用G使用)
-################################################################################
 class Index(JvnApplication):
-
+    """初期表示
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -58,11 +54,9 @@ class Index(JvnApplication):
         self.result = [ x[0:4] + (fs_manage_code2ui(x[4]),) for x in dao.get_all_records() ]
         ui.total_count = len(self.result)
 
-################################################################################
-# 依頼ボタン処理  (運用G使用)
-################################################################################
 class Execute(JvnApplication):
-
+    """依頼ボタン処理
+    """
     def do_logic(self, req, res, session):
 
         self.jinja_html_file = 'jvn_operation_complete.j2'
@@ -78,9 +72,9 @@ class Execute(JvnApplication):
 
                     rec = db.query(Product).filter_by(cpe = req.params[checkbox]).first()
                     rec.edit = 1
-                    records.append((req.params["vname" + str(i+1)]
-                                    ,req.params["pname" + str(i+1)]
-                                    ,req.params[checkbox]))
+                    records.append((req.params["vname" + str(i+1)],
+                                    req.params["pname" + str(i+1)],
+                                    req.params[checkbox]))
             return records
 
         self.result = do_transaction(do_execute,self)

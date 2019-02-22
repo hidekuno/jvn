@@ -11,11 +11,10 @@ import logging
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
 from wsgi_handler import make_like
-################################################################################
-# DAO(データアクセスオブジェクト)
-################################################################################
-class JvnDAO(object):
 
+class JvnDAO(object):
+    """Data Access Object
+    """
     def __init__(self, app):
 
         self.app = app
@@ -78,33 +77,25 @@ class JvnDAO(object):
             sql += """ and %s <= modified_date and modified_date <= %s """
 
         return params, sql
-################################################################################
-# セッションデータ
-################################################################################
+
 class JvnState(JvnPage):
+    """session data object
+    """
     def __init__(self):
         super(self.__class__, self).__init__()
         self.dp_from     = ''
         self.dp_to       = ''
         self.keyword     = ''
 
-################################################################################
-# 検索表示
-################################################################################
 class ListLogic(jvn_pagination.SearchModule):
-
-    ################################################################################
-    # 変数の初期化
-    ################################################################################
+    """検索表示
+    """
     def initialize(self):
         # インスタンス変数の初期化
         self.jinja_html_file = 'jvn_list.j2'
         self.dao = JvnDAO(self)
         self.MAX_TOTAL_COUNT = 10000000
 
-    ################################################################################
-    # UIオブジェクトの作成
-    ################################################################################
     def make_ui(self, req, session):
 
         self.ui = session.get(self.pager_app)

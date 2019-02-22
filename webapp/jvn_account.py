@@ -13,17 +13,16 @@ from wsgi_handler import hash_passwd
 
 from jvn_model import Account
 from jvn_model import do_transaction
-################################################################################
-# セッションデータ
-################################################################################
+
 class JvnState(object):
+    """session data object
+    """
     def __init__(self):
         self.passwd     = ''
 
-################################################################################
-# セッションデータ
-################################################################################
 def setPrivs(app, privs):
+    """権限情報編集
+    """
     if privs == 'admin':
         app.admin = 'checked'
         app.user  = ''
@@ -31,11 +30,9 @@ def setPrivs(app, privs):
         app.admin = ''
         app.user  = 'checked'
 
-################################################################################
-# 初期表示処理
-################################################################################
 class Index(JvnApplication):
-
+    """初期表示処理
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -43,31 +40,28 @@ class Index(JvnApplication):
         self.jinja_html_file = 'jvn_account.j2'
         self.result = do_transaction(lambda db : db.query(Account).order_by(Account.user_id).all(),self)
 
-################################################################################
-# 新規登録処理
-################################################################################
 class Regist(JvnApplication):
+    """新規登録処理
+    """
     def do_logic(self, req, res, session):
 
         session[ get_session_key(req) ] = JvnState()
 
         self.jinja_html_file = 'jvn_account_edit.j2'
-        self.ui = Account({'user_id'     : ''
-                           ,'passwd'     : ''
-                           ,'user_name'  : ''
-                           ,'email'      : ''
-                           ,'department' : ''
-                           ,'privs'      : ''}
-                          ,'')
+        self.ui = Account({'user_id'    : '',
+                           'passwd'     : '',
+                           'user_name'  : '',
+                           'email'      : '',
+                           'department' : '',
+                           'privs'      : ''},'')
 
         self.readonly = ''
         self.method = 'regist'
         setPrivs(self, 'user')
-################################################################################
-# 変更処理
-################################################################################
-class Modify(JvnApplication):
 
+class Modify(JvnApplication):
+    """変更処理
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -83,11 +77,10 @@ class Modify(JvnApplication):
         self.readonly = 'readonly'
         self.method = 'modify'
         setPrivs(self, self.ui.privs)
-################################################################################
-# 更新処理
-################################################################################
-class Execute(JvnApplication):
 
+class Execute(JvnApplication):
+    """更新処理
+    """
     def is_token_valid(self, req, session):
         return True
 
@@ -124,11 +117,10 @@ class Execute(JvnApplication):
             return db.query(Account).order_by(Account.user_id).all()
 
         self.result = do_transaction(do_execute,self)
-################################################################################
-# 削除処理
-################################################################################
-class Delete(JvnApplication):
 
+class Delete(JvnApplication):
+    """削除処理
+    """
     def is_token_valid(self, req, session):
         return True
 
