@@ -219,7 +219,7 @@ def fs_manage_code2ui(code):
 def make_like(word):
     """SQLのLike検索を付加した文字列を取得
     """
-    return word.replace(' ', '%') + '%'
+    return '%' + word.replace(' ', '%') + '%'
 
 def logout(environ, start_response):
     """ログアウト処理
