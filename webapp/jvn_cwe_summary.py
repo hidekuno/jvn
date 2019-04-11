@@ -15,7 +15,7 @@ class JvnDAO(object):
         self.app = app
 
     def get_records(self):
-        sqlfmt = """select cwetitle, c
+        sqlfmt = """select a.cweid, cwetitle, c
                     from (select cweid, count(cweid) as c from jvn_vulnerability group by cweid) a,
                          (select distinct cweid, cwetitle from jvn_vulnerability ) b
                     where a.cweid = b.cweid order by c desc;"""
@@ -41,4 +41,5 @@ class Index(JvnApplication):
         self.ui = session[get_session_key(req)] = JvnState()
         self.jinja_html_file = 'jvn_summary.j2'
         dao = JvnDAO(self)
-        self.result = dao.get_records()
+        self.result = [('<a href="%s/jvn_list/index?cweid=%s">%s</a>' % (self.topuri, rec[0], rec[1]),rec[2],)
+                       for rec in dao.get_records()]
