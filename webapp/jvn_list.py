@@ -26,6 +26,7 @@ class JvnDAO(object):
             self.dp_to    = app.ui.dp_to
 
         self.keyword = app.ui.keyword
+        self.cweid = app.ui.cweid
 
     def get_count(self):
         sql_count = """select count(*) from jvn_vulnerability a
@@ -43,7 +44,7 @@ class JvnDAO(object):
                     identifier, max(title) as title, max(link) as link, modified_date, issued_date, max(fs_manage) as fs_manage
                     from
                     (
-                      select   a.identifier, title, link, modified_date, issued_date,
+                      select   a.identifier, title, link, modified_date, issued_date,cweid,
                              (case when modified_date < ticket_modified_date then 4
                                    when fs_manage='not_cover_item'           then 0
                                    when fs_manage='cover_item'               then 1
@@ -53,7 +54,7 @@ class JvnDAO(object):
                       from     jvn_vulnerability a, jvn_vulnerability_detail b, jvn_product c
                       where    a.identifier = b.identifier
                       and      b.cpe = c.cpe) as mail_query"""
-        sql_gr = """group by identifier, modified_date, issued_date
+        sql_gr = """group by identifier, modified_date, issued_date,cweid
                     order by modified_date desc limit %s OFFSET %s;"""
 
         params, sql_where = self.make_sql_params("""where true """)
@@ -76,6 +77,10 @@ class JvnDAO(object):
             params.append(self.dp_to)
             sql += """ and %s <= modified_date and modified_date <= %s """
 
+        if self.cweid :
+            params.append(self.cweid)
+            sql += """ and cweid = %s """
+
         return params, sql
 
 class JvnState(JvnPage):
@@ -86,6 +91,7 @@ class JvnState(JvnPage):
         self.dp_from     = ''
         self.dp_to       = ''
         self.keyword     = ''
+        self.cweid       = ''
 
 class ListLogic(jvn_pagination.SearchModule):
     """検索表示
@@ -102,10 +108,16 @@ class ListLogic(jvn_pagination.SearchModule):
         if (self.ui is None) or ('dp_from' in req.params) or (os.path.basename(req.path_qs) == 'index'):
             self.ui = session[self.pager_app] = JvnState()
 
+        # UIより入力
         if 'dp_from' in req.params:
-            self.ui.keyword = req.params['keyword']
             self.ui.dp_from = req.params['dp_from']
             self.ui.dp_to   = req.params['dp_to']
+            self.ui.keyword = req.params['keyword']
+
+        # 集計画面より遷移
+        if 'cweid' in req.params:
+            self.ui.reset()
+            self.ui.cweid   = req.params['cweid']
 
 ################################################################################
 # 初期表示処理,次ページ処理,前ページ処理,戻るページ遷移
