@@ -122,5 +122,5 @@ CREATE INDEX jvn_vulnerability_detail_idx_2 ON jvn_vulnerability_detail (cpe);
 
 truncate table jvn_account;
 insert into jvn_account values
-('hidekuno_admin','', 'あどみん','hidekuno@gmail.com','開発部','admin'),
-('hidekuno_user' ,'', 'ゆーざー','hidekuno@gmail.com','開発部','user');
+('hideki_admin','', 'あどみん','hidekuno@gmail.com','開発部','admin'),
+('hideki_user' ,'', 'ゆーざー','hidekuno@gmail.com','開発部','user');
