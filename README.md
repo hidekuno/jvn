@@ -9,7 +9,7 @@ https://jvndb.jvn.jp/
 - そこそこ(学習のためなので)
 
 - 一覧画面
-![image](https://user-images.githubusercontent.com/22115777/51661182-6d227700-1ff3-11e9-8706-0e0c7e13f1bd.png)
+![image](https://user-images.githubusercontent.com/22115777/58462471-f2b65f00-816c-11e9-9e21-9e5677bed6c1.png)
 - 集計画面
 ![image](https://user-images.githubusercontent.com/4899700/47139528-fb050c80-d2f6-11e8-8427-eeb267a43f9f.png)
 - グラフ画面
