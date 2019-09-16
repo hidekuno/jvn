@@ -96,7 +96,7 @@ def makeBarChart(hfd,df):
     plt.legend((p1,p2), ("発見日", "IPA公表日"), fontsize=10)
 
     plt.savefig(hfd, format='png')
-    plt.close(fig)
+    plt.close()
 
 def makeLineChartOld(hfd, df):
     """折れ線グラフ表示
@@ -129,7 +129,7 @@ def makeLineChart(hfd, df):
     plt.legend(bbox_to_anchor=(1,1), loc=2, fontsize=10)
 
     plt.savefig(hfd, format='png')
-    plt.close(fig)
+    plt.close()
 
 class JvnImageHandler(BaseHTTPRequestHandler):
     """Web サーバを実装
