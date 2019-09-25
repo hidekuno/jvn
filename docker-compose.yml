@@ -14,8 +14,8 @@ postgres:
 
 plt:
   build: .
-  command: /usr/bin/python3.6 /var/local/jvn_plt_server.py
-  dockerfile: docker/python3/Dockerfile
+  command: /usr/bin/python3 /var/local/jvn_plt_server.py
+  dockerfile: docker/plt/Dockerfile
   expose:
     - 8003
   ports:
@@ -34,7 +34,7 @@ plt:
 web:
   build: .
   command: /usr/sbin/httpd -DFOREGROUND
-  dockerfile: docker/httpd/Dockerfile
+  dockerfile: docker/web/Dockerfile
   expose:
     - 80
   ports:
