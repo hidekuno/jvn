@@ -49,7 +49,7 @@ class JvnPage(object):
         else:
             self.is_display_next = False
 
-class SearchModule():
+class SearchModule(object):
     """検索表示
     """
     def initialize(self):pass
