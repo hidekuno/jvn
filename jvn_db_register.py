@@ -7,20 +7,21 @@
 #
 
 import sys
-import os
-import os.path
-import logging
-import logging.handlers
+import os,os.path
+import logging,logging.handlers
 import traceback
-import urllib2
+import urllib.request
 import psycopg2
 from xml.etree import ElementTree
 import codecs
-import ConfigParser
+import configparser
 import argparse
 
-TMP_DIR      = os.path.join(os.sep,'tmp')
+import ssl
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
+TMP_DIR      = os.path.join(os.sep,'tmp')
 ################################################################################
 # core logic
 ################################################################################
@@ -28,9 +29,9 @@ def log(f):
     """各メソッドに開始・終了ログを出力を行うようにする。
     """
     def _(*arg):
-         logging.info(f.func_name + "() start.")
+         logging.info(f.__name__ + "() start.")
          f(*arg)
-         logging.info(f.func_name + "() end.")
+         logging.info(f.__name__ + "() end.")
     return _
 
 class JvnException(Exception):
@@ -78,7 +79,7 @@ class JvnAPI(object):
             url = self.jvn_url + self.jvn.get_method() + '&' + param
             logging.debug("URL = " + url )
 
-            root = ElementTree.parse(urllib2.urlopen(url)).getroot()
+            root = ElementTree.parse(urllib.request.urlopen(url)).getroot()
             status = root.find(myjvn_path('Status', 'Status'))
 
             if not status.get("retCd") == "0":
@@ -103,9 +104,7 @@ class JvnVendor(object):
     """ベンダ情報ファイルのデータ処理
     """
     def __init__(self):
-        # 日本語で出力できるようにする。
-        self.vender_fd  = open(os.path.join(TMP_DIR, 'jvn_vendor_work.csv'),'w')
-        self.vender_fd  = codecs.lookup('utf_8')[-1](self.vender_fd)
+        self.vender_fd  = codecs.open(os.path.join(TMP_DIR, 'jvn_vendor_work.csv'),'w','utf-8')
 
     def get_method(self):
         return 'method=getVendorList'
@@ -121,9 +120,7 @@ class JvnProduct(object):
     """製品情報ファイルのデータ処理
     """
     def __init__(self):
-        # 日本語で出力できるようにする。
-        self.product_fd = open(os.path.join(TMP_DIR, 'jvn_product_work.csv'),'w')
-        self.product_fd = codecs.lookup('utf_8')[-1](self.product_fd)
+        self.product_fd = codecs.open(os.path.join(TMP_DIR, 'jvn_product_work.csv'),'w','utf-8')
 
     def get_method(self):
         return 'method=getProductList'
@@ -141,20 +138,15 @@ class JvnProduct(object):
     def debug_tag(self,element):
         for i in element.getiterator():
             if i.tag:
-                print('tag : '+ i.tag)
+                print(('tag : '+ i.tag))
 
 class JvnVulnerability(object):
     """脆弱性情報ファイルのデータ処理
     """
     def __init__(self,date_range):
         self.date_range = date_range
-
-        self.v_fd  = open(os.path.join(TMP_DIR, 'jvn_vulnerability_work.csv'),'w')
-        self.vd_fd = open(os.path.join(TMP_DIR, 'jvn_vulnerability_detail_work.csv'),'w')
-
-        # 日本語で出力できるようにする。
-        self.v_fd  = codecs.lookup('utf_8')[-1](self.v_fd)
-        self.vd_fd = codecs.lookup('utf_8')[-1](self.vd_fd)
+        self.v_fd  = codecs.open(os.path.join(TMP_DIR, 'jvn_vulnerability_work.csv'),'w','utf-8')
+        self.vd_fd = codecs.open(os.path.join(TMP_DIR, 'jvn_vulnerability_detail_work.csv'),'w','utf-8')
 
     def get_method(self):
         params = ['method=getVulnOverviewList',
@@ -176,8 +168,8 @@ class JvnVulnerability(object):
             issued_date   = item.find(self.dc_terms_path('issued')).text
             modified_date = item.find(self.dc_terms_path('modified')).text
 
-            title       = title.replace(u'\\', u'￥')
-            description = description.replace(u'\\', u'￥')
+            title       = title.replace('\\', '￥')
+            description = description.replace('\\', '￥')
             self.v_fd.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (identifier,
                                                           title,
                                                           link,
@@ -280,7 +272,7 @@ class RegisterDAO(object):
             csv_file = os.path.join(TMP_DIR, table_name + ".csv")
 
             logging.debug(table_name + ' insert...')
-            with open(csv_file,'r') as fd:
+            with codecs.open(csv_file,'r','utf-8') as fd:
                 self.cursor.copy_from(fd, table_name)
 
             os.remove(csv_file)
@@ -423,7 +415,7 @@ if __name__ == "__main__":
         logging.info("start")
 
         # 設定ファイルの取り込み
-        config = ConfigParser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'jvn.conf'))
 
         parser = argparse.ArgumentParser()
@@ -469,7 +461,5 @@ if __name__ == "__main__":
 
     except Exception as e:
         traceback.print_exc()
-        logging.critical(str(e) + "\n" + traceback.format_exc())
-        logging.error(str(type(e)))
-        logging.error(str(e.args))
+        logging.error(str(e) + "\n" + traceback.format_exc())
         sys.exit(1)
