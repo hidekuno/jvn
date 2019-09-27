@@ -11,6 +11,7 @@ postgres:
   environment:
     - "TZ=Japan"
     - "LANG=ja_JP.UTF-8"
+  container_name: jvn_postgres
 
 plt:
   build: .
@@ -29,7 +30,7 @@ plt:
   privileged: true
   environment:
     - "TZ=Japan"
-  container_name: plt
+  container_name: jvn_plt
 
 web:
   build: .
@@ -49,4 +50,4 @@ web:
   privileged: true
   environment:
     - "TZ=Japan"
-  container_name: web
+  container_name: jvn_web
