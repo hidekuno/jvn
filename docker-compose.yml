@@ -1,6 +1,7 @@
 ---
 postgres:
-  image: postgres:jvn
+  build: .
+  dockerfile: docker/database/Dockerfile
   expose:
     - 5432
   ports:
