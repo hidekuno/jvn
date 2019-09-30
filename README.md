@@ -24,7 +24,15 @@ https://jvndb.jvn.jp/
 | Python   | 3.6.6|グラフ画像生成|
 | apache   | 2.4.6||
 
-## その他
-インストールの方法、動かし方などは下記を参照
-
-https://github.com/hidekuno/jvn/wiki
+## インストールの方法、動かし方
+- 下記コマンドを実行
+```
+cd ${WHERE}
+git clone https://github.com/hidekuno/jvn
+cd jvn
+docker-compose build
+docker-compose up -d
+```
+- User/Passwordをadmin/adminを入力してログイン
+<img src="https://user-images.githubusercontent.com/22115777/65844320-ba1fcf80-e370-11e9-8c36-3f0aa0ef9059.png" width=50%>
+<img src="https://user-images.githubusercontent.com/22115777/65844449-521db900-e371-11e9-9586-4b995d1c781b.png" width=50%>
