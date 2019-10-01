@@ -291,7 +291,9 @@ class RegisterDAO(object):
             INSERT INTO jvn_vendor(vid,vname,cpe)
             SELECT vid,vname,cpe
             FROM   jvn_vendor_work
-            WHERE  vid NOT IN (SELECT vid FROM upsert);"""
+            WHERE  NOT EXISTS (
+              SELECT 1 from (SELECT vid FROM upsert) a where a.vid = jvn_vendor_work.vid
+            );"""
         self.cursor.execute(sql)
 
         sql = """WITH upsert AS
@@ -301,7 +303,9 @@ class RegisterDAO(object):
             INSERT INTO jvn_product(pid,pname,cpe,vid,fs_manage,edit)
             SELECT pid,pname,cpe,vid,'undefine',0
             FROM   jvn_product_work
-            WHERE  cpe NOT IN (SELECT cpe FROM upsert);"""
+            WHERE  NOT EXISTS (
+              SELECT 1 from (SELECT cpe FROM upsert) a where a.cpe = jvn_product_work.cpe
+            );"""
         self.cursor.execute(sql)
         self.connection.commit()
 
