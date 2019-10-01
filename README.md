@@ -20,8 +20,8 @@ https://jvndb.jvn.jp/
 |--------|--------|--------|
 | OS     | CentOS7 | |
 | PostgreSQL   | 9.2||
-| Python   | 2.7.5|Web UI|
-| Python   | 3.6.6|グラフ画像生成|
+| Python   | 3.6.8|Web UI|
+| Python   | 3.6.8|グラフ画像生成|
 | apache   | 2.4.6||
 
 ## インストールの方法、動かし方
