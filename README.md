@@ -33,6 +33,6 @@ cd jvn
 docker-compose build
 docker-compose up -d
 ```
-- User/Passwordをadmin/adminを入力してログイン
+- User/Passwordをadmin/adminでログイン
 <img src="https://user-images.githubusercontent.com/22115777/65844320-ba1fcf80-e370-11e9-8c36-3f0aa0ef9059.png" width=50%>
 <img src="https://user-images.githubusercontent.com/22115777/65844449-521db900-e371-11e9-9586-4b995d1c781b.png" width=50%>
