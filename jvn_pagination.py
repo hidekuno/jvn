@@ -27,7 +27,7 @@ class JvnPage(object):
 
     def set_count(self,count):
         self.total_count = count
-        self.total_page  = (count / PAGE_COUNT)
+        self.total_page  = int(count / PAGE_COUNT)
         if ((count % PAGE_COUNT) != 0):
             self.total_page  += 1
 
