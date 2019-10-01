@@ -10,13 +10,10 @@ import os.path
 import types
 import glob
 import sys
-reload (sys)
-sys.setdefaultencoding('utf-8')
-sys.dont_write_bytecode = True
 import traceback
 import logging
 import logging.config
-import ConfigParser
+import configparser
 
 import psycopg2
 from paste import urlmap
@@ -29,6 +26,7 @@ from jinja2 import Environment, FileSystemLoader
 import uuid
 import hashlib
 import poplib
+import importlib
 
 from jvn_model import Account
 from jvn_model import do_transaction
@@ -47,7 +45,7 @@ class JvnApplication(object):
     def __init__(self):
         """コンストラクタ
         """
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.ConfigParser()
         jvn_path = os.path.abspath(os.path.dirname(__file__))
 
         self.config.read(os.path.join(jvn_path, 'jvn.conf'))
@@ -58,7 +56,7 @@ class JvnApplication(object):
     def save_token(self,session):
         """Set Transaction Token
         """
-        self.web_token = session[TOKEN_KEY] = hashlib.md5( str(uuid.uuid4()) ).hexdigest()
+        self.web_token = session[TOKEN_KEY] = hashlib.md5(str(uuid.uuid4()).encode('utf-8')).hexdigest()
 
     def is_token_valid(self, req, session):
         """Check Transaction Token
@@ -142,21 +140,7 @@ class JvnApplication(object):
             if connection is not None:
                 connection.close()
 
-        env = Environment(loader=FileSystemLoader('/var/www/jvn', encoding='utf8'),
-                          autoescape=True)
-
-        tmpl = env.get_template(os.path.join('template', self.jinja_html_file))
-        view = tmpl.render(app=self).encode("utf-8")
-
-        res.status_code           = 200
-        res.content_type          = 'text/html'
-        res.charset               = 'utf8'
-        res.cache_expires(60)
-        res.content_language      = ['ja']
-        res.server                = 'Shindoi Joke/1.0'
-        res.body                  = view
-        res.content_length        = str(len(res.body))
-
+        set_response(res, self.jinja_html_file, self)
         return res(environ,start_response)
 
 class JvnUser(object):
@@ -195,7 +179,7 @@ def auth_pop_user(user, passwd):
 def hash_passwd(passwd):
     """パスワードをハッシュ化する
     """
-    return hashlib.md5(SALT + passwd).hexdigest()
+    return hashlib.md5((SALT + passwd).encode('utf-8')).hexdigest()
 
 def get_session_key(req):
     """セッションキーを取得する
@@ -221,6 +205,22 @@ def make_like(word):
     """
     return '%' + word.replace(' ', '%') + '%'
 
+def set_response(res,jinja_html_file,webapp):
+    env = Environment(loader=FileSystemLoader('/var/www/jvn', encoding='utf8'),
+                      autoescape=True)
+
+    tmpl = env.get_template(os.path.join('template', jinja_html_file))
+    view = tmpl.render(app=webapp).encode("utf-8")
+
+    res.status_code           = 200
+    res.content_type          = 'text/html'
+    res.charset               = 'utf8'
+    res.cache_expires(60)
+    res.content_language      = ['ja']
+    res.server                = 'Shindoi Joke/1.0'
+    res.body                  = view
+    res.content_length        = str(len(res.body))
+
 def logout(environ, start_response):
     """ログアウト処理
     """
@@ -235,11 +235,9 @@ def logout(environ, start_response):
         if os.access(session_file,os.R_OK):
             os.remove(session_file)
 
-    env = Environment(loader=FileSystemLoader('/var/www/jvn', encoding='utf8'),autoescape=True)
-    tmpl = env.get_template(os.path.join('template', 'jvn_login.j2'))
-
-    start_response('200 OK', [('Content-type', 'text/html')])
-    return tmpl.render(app=UnknownApp()).encode("utf-8")
+    res = webob.Response()
+    set_response(res, 'jvn_login.j2', UnknownApp())
+    return res(environ, start_response)
 
 def application(env, start_response):
     """wsgiハンドラー
@@ -273,12 +271,12 @@ def application(env, start_response):
         chain['/jvn_logout'] = logout
         l = [os.path.basename(x) for x in glob.glob(os.path.join(app_path, 'jvn*.py'))]
         for obj in [f.replace('.py','') for f in l ]:
-            m = __import__(obj, globals(), locals(), [], -1)
+            m = importlib.import_module(obj)
             for k in m.__dict__.keys():
                 cls = m.__dict__[k]
 
                 # class Hogeの場合は if (type(cls) is types.ClassType
-                if (type(cls) is types.TypeType) and (True == is_application(cls)):
+                if (type(cls) is type) and (True == is_application(cls)):
                     chain['/' + cls.__module__ + '/' + cls.__name__.lower()] = cls()
                     logging.debug('/' + cls.__module__ + '/' + cls.__name__.lower())
 
