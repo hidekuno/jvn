@@ -71,5 +71,7 @@ def jvndb_detail_nocwe(filename):
             print("%s\t%s" % (e.find(jvn_path('VulinfoID')).text,
                               e.find(jvn_path('VulinfoData')).find(jvn_path('Title')).text))
 
+
+# for Y in `seq 1999 2019`; do curl -sO https://jvndb.jvn.jp/ja/feed/detail/jvndb_detail_${Y}.rdf; done
 for y in range(1998,2020):
     jvndb_detail_cwe('jvndb_detail_' + str(y) + '.rdf')
