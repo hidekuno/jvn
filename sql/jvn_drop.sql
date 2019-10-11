@@ -9,3 +9,4 @@ drop table if exists jvn_vulnerability;
 drop table if exists jvn_vulnerability_detail;
 drop table if exists jvn_vulnerability_detail_work;
 drop table if exists jvn_vulnerability_work;
+drop table if exists jvn_ipaddr;
