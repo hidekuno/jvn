@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS jvn_vulnerability_detail_work;
 DROP TABLE IF EXISTS jvn_account;
 DROP TABLE IF EXISTS jvn_mainte_work;
 DROP TABLE IF EXISTS jvn_cwe_work;
+DROP TABLE IF EXISTS jvn_ipaddr;
 
 DROP INDEX IF EXISTS jvn_vendor_idx_1;
 DROP INDEX IF EXISTS jvn_product_idx_1;
@@ -110,6 +111,14 @@ CREATE TABLE jvn_account (
   email         varchar(255),
   department    varchar(32),
   privs         varchar(8)
+);
+
+-- ---------------------  ベンダ情報 -------------------------
+CREATE TABLE    jvn_ipaddr (
+  addr          char(32) NOT NULL PRIMARY KEY,
+  subnetmask    smallint NOT NULL,
+  cidr          text     NOT NULL,
+  country       char(2)  NOT NULL
 );
 
 CREATE INDEX jvn_vendor_idx_1               ON jvn_vendor  (vid);
