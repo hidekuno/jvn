@@ -117,7 +117,7 @@ CREATE TABLE jvn_account (
 CREATE TABLE    jvn_ipaddr (
   addr          char(32) NOT NULL PRIMARY KEY,
   subnetmask    smallint NOT NULL,
-  cidr          text     NOT NULL,
+  cidr          cidr     NOT NULL,
   country       char(2)  NOT NULL
 );
 
@@ -128,6 +128,10 @@ CREATE INDEX jvn_product_idx_2              ON jvn_product (cpe);
 CREATE INDEX jvn_vulnerability_idx_1        ON jvn_vulnerability (modified_date);
 CREATE INDEX jvn_vulnerability_detail_idx_1 ON jvn_vulnerability_detail (identifier);
 CREATE INDEX jvn_vulnerability_detail_idx_2 ON jvn_vulnerability_detail (cpe);
+
+-- like検索のため
+-- https://www.postgresql.jp/document/9.6/html/indexes-opclass.html
+CREATE INDEX jvn_ipaddr_idx_1               ON jvn_ipaddr (addr bpchar_pattern_ops);
 
 truncate table jvn_account;
 insert into jvn_account values
