@@ -11,7 +11,7 @@ from io import StringIO
 CREATE TEMPORARY TABLE jvn_ipaddr_tmp (
   addr          char(32) NOT NULL PRIMARY KEY,
   subnetmask    smallint NOT NULL,
-  cidr          text     NOT NULL,
+  cidr          cidr     NOT NULL,
   country       char(2)  NOT NULL
 );
 copy jvn_ipaddr_tmp from '/var/jvn/tmp/cidr.txt';
