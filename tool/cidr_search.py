@@ -7,7 +7,7 @@ connection_config = {
     'host':     'localhost',
     'port':     '15432',
     'database': 'jvn_db',
-    'user':     'jvn',  
+    'user':     'jvn',
     'password': 'jvn'
 }
 
