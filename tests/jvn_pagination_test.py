@@ -1,4 +1,18 @@
+#!/usr/bin/python
+#
+# JVN Vulnerability Infomation Managed System
+#
+# hidekuno@gmail.com
+#
+# Test howto
+# 1) python tests/cidr_search_test.py
+# 2) cd tests; python -m unittest cidr_search_test
+# 3) PYTHONPATH=$HOME/jvn python tests/cidr_search_test.py
+#
 import unittest
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent.parent))
 
 from jvn_pagination import JvnPage
 from jvn_pagination import SearchModule
