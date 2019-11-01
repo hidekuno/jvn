@@ -1,4 +1,18 @@
+#!/usr/bin/python
+#
+# JVN Vulnerability Infomation Managed System
+#
+# hidekuno@gmail.com
+#
+# Test howto
+# 1) python tests/cidr_search_test.py
+# 2) cd tests; python -m unittest cidr_search_test
+# 3) PYTHONPATH=$HOME/jvn python tests/cidr_search_test.py
+#
 import unittest
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).parent.parent))
 
 from jvn_model import Account
 from jvn_model import Product
@@ -17,9 +31,9 @@ class JvnTest(object):
         self.config = Config()
         self.config.dic['host'] = 'localhost'
         self.config.dic['port'] = '15432'
-        self.config.dic['database'] = 'hideki_db'
-        self.config.dic['user'] = 'hideki'
-        self.config.dic['password'] = 'hideki'
+        self.config.dic['database'] = 'jvn_db'
+        self.config.dic['user'] = 'jvn'
+        self.config.dic['password'] = 'jvn'
 
 class TestMethods(unittest.TestCase):
 
@@ -278,7 +292,7 @@ class TestMethods(unittest.TestCase):
 
     def test_account_15(self):
         row = {}
-        row['user_id'] = "hideki_admin"
+        row['user_id'] = "admin"
         password = "1234567890"
         row['user_name'] = ("a" * 255)
         row['email'] = "testtaro@email.jp"
@@ -315,7 +329,7 @@ class TestMethods(unittest.TestCase):
     def test_do_transaction(self):
         t = JvnTest()
         result = do_transaction(lambda db : db.query(Account).order_by(Account.user_id).all(), t)
-        users = ['hideki_admin','hideki_user']
+        users = ['admin','guest']
         for i, r in enumerate(result):
             self.assertEqual(r.user_id, users[i])
 
