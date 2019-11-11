@@ -126,6 +126,7 @@ CREATE INDEX jvn_vendor_idx_2               ON jvn_vendor  (cpe);
 CREATE INDEX jvn_product_idx_1              ON jvn_product (pid);
 CREATE INDEX jvn_product_idx_2              ON jvn_product (cpe);
 CREATE INDEX jvn_vulnerability_idx_1        ON jvn_vulnerability (modified_date);
+CREATE INDEX jvn_vulnerability_idx_2 ON jvn_vulnerability(title text_pattern_ops);
 CREATE INDEX jvn_vulnerability_detail_idx_1 ON jvn_vulnerability_detail (identifier);
 CREATE INDEX jvn_vulnerability_detail_idx_2 ON jvn_vulnerability_detail (cpe);
 
