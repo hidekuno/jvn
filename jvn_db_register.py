@@ -86,11 +86,14 @@ class JvnAPI(object):
                 logging.warning("BAD URL = " + url )
                 continue
 
-            self.jvn.do_logic(root)
-
             response = ["totalRes","totalResRet","firstRes"]
             logging.debug(" ".join([x + " = " + str(status.get(x)) for x in response]))
             check_count = [ int(status.get(x)) for x in response ]
+
+            if 0 >= check_count[0]:
+                break
+
+            self.jvn.do_logic(root)
 
             if (check_count[1] + check_count[2]) > check_count[0]:
                 break
