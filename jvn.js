@@ -85,49 +85,24 @@ $(function(){
 //====================================================================
 // 日付チェック関数
 //====================================================================
-function checkDate( str ) { 
-    return true; 
-
-    // 書式の確認 
-    if( !str.match( /^\d{4}\-\d{2}\-\d{2}$/ )) { 
-	return false; 
-    } 
-    var vYear  = str.substr( 0, 4 ) - 0;
-    var vMonth = str.substr( 5, 2 ) - 1;
-    var vDay   = str.substr( 8, 2 ) - 0;
-
-    // 年月日の値の確認 
-    if ( 0 <= vMonth && vMonth <= 11 && 1 <= vDay && vDay <= 31 ) { 
-
-	var vDate = new Date( vYear, vMonth, vDay ); 
-	if ( !isNaN( vDate )               &&
-            vDate.getFullYear() == vYear  &&
-            vDate.getMonth()    == vMonth &&
-            vDate.getDate()     == vDay) { 
-
-            return true; 
-
-	} else { 
-
-            return false; 
-	} 
-
+function checkDate( str ) {
+    var d = new Date(str);
+    if (isNaN(d)) {
+        return false;
     } else {
-
-	return false; 
-    } 
+        return true;
+    }
 }
 //====================================================================
 // 脆弱性情報確認画面　全選択
 //====================================================================
 $('#vul_search_btn').click(function() { 
-
     if (false == checkDate($('#dp_from').val())) {
-        bootbox.alert('YYYY-MM-DD形式で入力してください。', function(result) {});
+        bootbox.alert('YYYY-MM-DD HH:MI:SS形式で入力してください。', function(result) {});
         return false;
     }
     if (false == checkDate($('#dp_to').val())) {
-        bootbox.alert('YYYY-MM-DD形式で入力してください。', function(result) {});
+        bootbox.alert('YYYY-MM-DD HH:MI:SS形式で入力してください。', function(result) {});
         return false;
     }
     return true;
