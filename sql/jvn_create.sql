@@ -106,7 +106,7 @@ CREATE TABLE jvn_cwe_work (
 -- --------------------- アカウント情報 --------------------
 CREATE TABLE jvn_account (
   user_id       varchar(32)    NOT NULL PRIMARY KEY,
-  passwd        varchar(32),
+  passwd        varchar(64),
   user_name     varchar(255),
   email         varchar(255),
   department    varchar(32),
