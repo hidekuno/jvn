@@ -86,6 +86,10 @@ $(function(){
 // 日付チェック関数
 //====================================================================
 function checkDate( str ) {
+    // str == null || str == '' as same
+    if (!str) {
+        return true;
+    }
     var d = new Date(str);
     if (isNaN(d)) {
         return false;
