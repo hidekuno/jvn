@@ -72,10 +72,13 @@ class JvnDAO(object):
             params.append(make_like(self.keyword))
             sql += """ and title ilike %s """
 
-        if self.dp_from != '' and self.dp_to != '':
+        if self.dp_from != '':
+            sql += """ and %s <= modified_date"""
             params.append(self.dp_from)
+
+        if self.dp_to != '':
+            sql += """ and modified_date <= %s """
             params.append(self.dp_to)
-            sql += """ and %s <= modified_date and modified_date <= %s """
 
         if self.cweid :
             params.append(self.cweid)
