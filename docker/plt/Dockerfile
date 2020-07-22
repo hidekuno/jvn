@@ -4,5 +4,4 @@ MAINTAINER hidekuno@gmail.com
 # setting 
 WORKDIR /var/local
 
-RUN apt-get update |true
-RUN apt-get install -y python3 python3-numpy python3-pandas python3-matplotlib python3-psycopg2 fonts-vlgothic|true
+RUN apt-get update && apt-get install -y python3 python3-numpy python3-pandas python3-matplotlib python3-psycopg2 fonts-vlgothic|true
