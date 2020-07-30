@@ -417,6 +417,11 @@ def init_logger():
 ################################################################################
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--month',  action='store_true', dest="month")
+    parser.add_argument('-y', '--year',   type=int, dest="fiscal_year")
+    args = parser.parse_args(sys.argv[1:])
+
     try:
         init_logger()
         logging.info("start")
@@ -424,11 +429,6 @@ if __name__ == "__main__":
         # 設定ファイルの取り込み
         config = configparser.ConfigParser()
         config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'jvn.conf'))
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument('-m', '--month',  action='store_true', dest="month")
-        parser.add_argument('-y', '--year',   type=int, dest="fiscal_year")
-        args = parser.parse_args(sys.argv[1:])
 
         date_range = "m" if args.month == True  else "w"
         # 製品情報,JVN脆弱性情報の取り込み
