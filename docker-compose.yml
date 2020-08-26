@@ -30,7 +30,7 @@ plt:
   stdin_open: true
   privileged: true
   environment:
-    - "TZ=Japan"
+    - "TZ=JST-9"
   container_name: jvn_plt
 
 web:
@@ -50,5 +50,5 @@ web:
   stdin_open: true
   privileged: true
   environment:
-    - "TZ=Japan"
+    - "TZ=JST-9"
   container_name: jvn_web
