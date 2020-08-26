@@ -35,7 +35,6 @@ plt:
 
 web:
   build: .
-  command: /usr/sbin/apache2ctl -D FOREGROUND
   dockerfile: docker/web/Dockerfile
   expose:
     - 80
