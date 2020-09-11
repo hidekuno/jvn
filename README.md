@@ -15,15 +15,6 @@ https://jvndb.jvn.jp/
 - グラフ画面
 <img src="https://user-images.githubusercontent.com/22115777/52532776-3d060280-2d6d-11e9-9c66-ca9e8ed2844d.png" width=50%>
 
-## 開発環境
-| Item   | Ver. |備考|
-|--------|--------|--------|
-| OS     | CentOS7 | |
-| PostgreSQL   | 9.2||
-| Python   | 3.6.8|Web UI|
-| Python   | 3.6.8|グラフ画像生成|
-| apache   | 2.4.6||
-
 ## インストールの方法、動かし方
 - 下記コマンドを実行
 ```
