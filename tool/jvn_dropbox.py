@@ -30,7 +30,7 @@ try:
 
     f = open(LOCAL_FILE, 'rb')
 
-    dbx.files_upload(f.read(), REMOTE_FILE)
+    dbx.files_upload(f.read(), REMOTE_FILE, mode=dropbox.files.WriteMode('overwrite'))
 
     f.close()
 
