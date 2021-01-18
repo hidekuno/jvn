@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import os
+import sys
 import psycopg2
 import configparser
 from datetime import datetime
@@ -22,7 +23,7 @@ import numpy as np
 # const configuration
 ################################################################################
 # 設定ファイルの取り込み
-config = configparser.SafeConfigParser()
+config = configparser.ConfigParser()
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'jvn.conf'))
 CONNECTION_CONFIG = {
     'host':     config.get('db','host'),
@@ -37,8 +38,22 @@ ml.rc('font', **font)
 plt.rcParams['figure.figsize'] = 12.0,6.0
 
 ################################################################################
-# core logic
+# collect data
 ################################################################################
+class JvnItem(object):
+    def __init__(self,col,label):
+        self.col = col
+        self.label = label
+
+
+class JvnGraph(object):
+    def __init__(self, df,item1,item2):
+        """コンストラクタ
+        """
+        self.df = df
+        self.item1 = item1
+        self.item2 = item2
+
 def makeDataFrameYear():
     """年別脆弱性件数を取得
 
@@ -46,94 +61,104 @@ def makeDataFrameYear():
     """
     connection = psycopg2.connect(**CONNECTION_CONFIG)
 
-    stmt = """select y, y as yyyy, count(y) as cnt
+    stmt = """select y, count(y) as cnt
     from (select to_char(public_date,'YYYY') as y from jvn_vulnerability) a
     group by y order by y;"""
     df = pd.read_sql(sql=stmt, con=connection, index_col='y')
 
-    stmt = """select y, y as yyyy, count(y) as cnt
+    stmt = """select y, count(y) as cnt
     from (select to_char(issued_date,'YYYY') as y from jvn_vulnerability) a
     group by y order by y;"""
     issued_df = pd.read_sql(sql=stmt, con=connection, index_col='y')
     connection.close()
     df['icnt'] = issued_df['cnt']
 
-    return df
+    return JvnGraph(df,JvnItem('cnt','発見日'),JvnItem('icnt', 'IPA公表日'))
 
-def makeBarChartOld(hfd,df):
-    """棒グラフ表示
+def makeDataFrameCweYear():
+    """脆弱性種別数を取得
 
-    プロトタイプ版を実装した(初版)
+    脆弱性別の件数を取得する
     """
+    connection = psycopg2.connect(**CONNECTION_CONFIG)
 
-    df.plot.bar(width=0.8)
-    plt.legend(['発表日','IPA公表日'], fontsize=14)
-    plt.tick_params(labelsize=14)
-    plt.xlabel('年', fontsize=14)
+    stmt = """select to_char(public_date, 'yyyy') as yyyy,
+    count(cweid) as bcnt
+    from jvn_vulnerability
+    where cweid in ('CWE-119','CWE-120','CWE-121','CWE-122','CWE-124')
+    group by yyyy order by yyyy"""
+    buferr = pd.read_sql(sql=stmt, con=connection,index_col='yyyy')
+
+    stmt = """select to_char(public_date, 'yyyy') as yyyy,
+    count(cweid) as ccnt
+    from jvn_vulnerability
+    where cweid in ('CWE-79','CWE-80')
+    group by yyyy order by yyyy"""
+    xss = pd.read_sql(sql=stmt, con=connection,index_col='yyyy')
+
+    connection.close()
+
+    df = pd.concat([buferr,xss],axis=1,sort=True)
     t = datetime.now()
-    plt.title('脆弱性発生件数(1998/1/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
-    plt.savefig(hfd, format='png')
+    df = df[df.index.values < str(t.year)]
 
-def makeBarChart(hfd,df):
+    return JvnGraph(df,
+                    JvnItem('ccnt','クロスサイトスクリプティング'),
+                    JvnItem('bcnt', 'バッファエラー'))
+
+################################################################################
+# display data
+################################################################################
+def makeBarChart(hfd,jg):
     """棒グラフ表示
 
     UI用はこちらの実装
     """
+    df = jg.df
 
     plt.figure()
     plt.tick_params(labelsize=10)
     plt.xlabel('年', fontsize=10)
     plt.ylabel('件数', fontsize=10)
-    plt.title('脆弱性発生件数(%s〜%s)' % (df['yyyy'].min(),df['yyyy'].max()), fontsize=18)
+    plt.title('脆弱性発生件数(%s〜%s)' % (df.index.min(),df.index.max()), fontsize=18)
 
     left = np.arange(len(df))
     space = 0.4
 
-    p1 = plt.bar(left,       df['cnt'], color='#273CC5', width=space, align='center')
-    p2 = plt.bar(left+space, df['icnt'],color='#C31F53', width=space, align='center')
+    p1 = plt.bar(left,       df[jg.item1.col], color='#273CC5', width=space, align='center')
+    p2 = plt.bar(left+space, df[jg.item2.col], color='#C31F53', width=space, align='center')
 
-    plt.xticks(left + space/2, df['yyyy'])
-    plt.legend((p1,p2), ("発見日", "IPA公表日"), fontsize=10)
+    plt.xticks(left + space/2, df.index)
+    plt.legend((p1,p2), (jg.item1.label, jg.item2.label), fontsize=8)
 
     plt.savefig(hfd, format='png')
     plt.close()
 
-def makeLineChartOld(hfd, df):
-    """折れ線グラフ表示
-
-    プロトタイプ版を実装した(初版)
-    """
-
-    df.plot.line()
-    plt.legend(['発表日','IPA公表日'], fontsize=14)
-    plt.tick_params(labelsize=14)
-    plt.xlabel('年', fontsize=14)
-    t = datetime.now()
-    plt.title('集計期間(1998/1/1〜%d/%d/%d)' % (t.year, t.month, t.day), fontsize=18)
-    plt.savefig(hfd, format='png')
-
-def makeLineChart(hfd, df):
+def makeLineChart(hfd, jg):
     """折れ線グラフ表示
 
     UI用はこちらの実装
     """
+    df = jg.df
 
     plt.figure()
     plt.tick_params(labelsize=10)
     plt.xlabel('年', fontsize=10)
     plt.ylabel('件数', fontsize=10)
-    plt.title('脆弱性発生件数(%s〜%s)' % (df['yyyy'].min(),df['yyyy'].max()), fontsize=18)
+    plt.title('脆弱性発生件数(%s〜%s)' % (df.index.min(),df.index.max()), fontsize=18)
 
-    plt.plot(df['cnt'], color="blue",label="発見日")
-    plt.plot(df['icnt'],  color="red",label="IPA公表日")
-    plt.legend(bbox_to_anchor=(1,1), loc=2, fontsize=10)
+    plt.plot(df[jg.item1.col], color="blue",label=jg.item1.label)
+    plt.plot(df[jg.item2.col], color="red", label=jg.item2.label)
+    plt.legend(bbox_to_anchor=(0, 1.0), loc='upper left', fontsize=8)
 
     plt.savefig(hfd, format='png')
     plt.close()
 
+################################################################################
+# http handler
+################################################################################
 class JvnImageHandler(BaseHTTPRequestHandler):
     """Web サーバを実装
-
     API機能を提供する
     """
     def do_GET(self):
@@ -149,6 +174,15 @@ class JvnImageHandler(BaseHTTPRequestHandler):
             self.end_headers()
             makeLineChart(self.wfile, makeDataFrameYear())
 
+        if self.path == "/cwebarchart" :
+            self.send_header('Content-type', 'image/png')
+            self.end_headers()
+            makeBarChart(self.wfile, makeDataFrameCweYear())
+
+        elif self.path == "/cwelinechart" :
+            self.send_header('Content-type', 'image/png')
+            self.end_headers()
+            makeLineChart(self.wfile, makeDataFrameCweYear())
         else:
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
