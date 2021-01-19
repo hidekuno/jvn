@@ -9,6 +9,8 @@
       <h1 class="page-header">{{ app.title_name }}</h1>
     </div>
     <center>
-    <img src = {{ app.image_url }} />
+    <a href= {{ app.link_url}}>
+      <img src = {{ app.image_url }} alt="" />
+    </a>
     </center>
 {% include 'template/jvn_footer.j2' %}

@@ -20,6 +20,12 @@ class JvnDelegate(object):
         self.title_name = 'JVN 脆弱性発生件数'
         url = req.host_url
 
+        if 'cwe' in req.params:
+            self.link_url = "/vms/jvn_" + uri+  "/index"
+            uri = 'cwe' + uri
+        else:
+            self.link_url = "/vms/jvn_" + uri+  "/index?cwe=on"
+
         idx = url.rfind(':' + req.host_port)
         if idx == -1:
             p = url[0:url.find(':')]
