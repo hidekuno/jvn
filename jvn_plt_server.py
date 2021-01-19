@@ -109,6 +109,9 @@ def makeDataFrameCweYear():
 ################################################################################
 # display data
 ################################################################################
+PLOT_COLOR_1 = '#1f77b4'
+PLOT_COLOR_2 = '#ff7f0e'
+
 def makeBarChart(hfd,jg):
     """棒グラフ表示
 
@@ -125,8 +128,8 @@ def makeBarChart(hfd,jg):
     left = np.arange(len(df))
     space = 0.4
 
-    p1 = plt.bar(left,       df[jg.item1.col], color='#273CC5', width=space, align='center')
-    p2 = plt.bar(left+space, df[jg.item2.col], color='#C31F53', width=space, align='center')
+    p1 = plt.bar(left,       df[jg.item1.col], color=PLOT_COLOR_1, width=space, align='center')
+    p2 = plt.bar(left+space, df[jg.item2.col], color=PLOT_COLOR_2, width=space, align='center')
 
     plt.xticks(left + space/2, df.index)
     plt.legend((p1,p2), (jg.item1.label, jg.item2.label), fontsize=8)
@@ -147,8 +150,8 @@ def makeLineChart(hfd, jg):
     plt.ylabel('件数', fontsize=10)
     plt.title('脆弱性発生件数(%s〜%s)' % (df.index.min(),df.index.max()), fontsize=18)
 
-    plt.plot(df[jg.item1.col], color="blue",label=jg.item1.label)
-    plt.plot(df[jg.item2.col], color="red", label=jg.item2.label)
+    plt.plot(df[jg.item1.col], color=PLOT_COLOR_1,label=jg.item1.label)
+    plt.plot(df[jg.item2.col], color=PLOT_COLOR_2,label=jg.item2.label)
     plt.legend(bbox_to_anchor=(0, 1.0), loc='upper left', fontsize=8)
 
     plt.savefig(hfd, format='png')
