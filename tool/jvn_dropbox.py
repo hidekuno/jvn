@@ -35,7 +35,7 @@ try:
     f.close()
 
     for entry in dbx.files_list_folder('').entries:
-        print(entry.name)
+        print('"{}": upload done.'.format(entry.name))
 
 except:
     traceback.print_exc()
