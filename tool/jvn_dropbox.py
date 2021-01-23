@@ -4,8 +4,12 @@
 # visit this site.
 #   https://www.dropbox.com/developers/apps
 #
-# target file content by this command line
-#   docker exec jvn_postgres pg_dump -v -U jvn jvn_db | gzip -c > /tmp/jvn_dump.sql.gz
+# target file content by this command lines
+#   1) docker exec jvn_web python3 /var/www/jvn/jvn_db_register.py
+#   2) docker exec jvn_postgres pg_dump -v -U jvn jvn_db | gzip -c > /tmp/jvn_dump.sql.gz
+#
+#  Usage:
+#    python /home/hideki/jvn/tool/jvn_dropbox.py --token=XXXXXXXXXXXXXXXXX
 #
 # hidekuno@gmail.com
 #
