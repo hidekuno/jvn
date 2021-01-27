@@ -27,3 +27,15 @@ docker-compose up -d
 - User/Passwordをadmin/adminでログイン
 <img src="https://user-images.githubusercontent.com/22115777/65844320-ba1fcf80-e370-11e9-8c36-3f0aa0ef9059.png" width=50%>
 <img src="https://user-images.githubusercontent.com/22115777/65844449-521db900-e371-11e9-9586-4b995d1c781b.png" width=50%>
+
+## JVNデータの更新
+```
+docker exec jvn_web python3 /var/www/jvn/jvn_db_register.py
+```
+
+## JVNデータのバックアップ
+```
+docker exec jvn_postgres pg_dump -v -U jvn jvn_db | gzip -c > /tmp/jvn_dump.sql.gz
+python /home/hideki/jvn/tool/jvn_dropbox.py  --token=${YOUR_DROPBOX_APIKEY}
+```
+
