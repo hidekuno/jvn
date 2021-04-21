@@ -5,7 +5,6 @@
 #
 # hidekuno@gmail.com
 #
-import os
 import jvn_pagination
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage

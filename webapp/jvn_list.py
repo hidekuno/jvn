@@ -7,7 +7,6 @@
 #
 import os
 import jvn_pagination
-import logging
 from jvn_pagination import PAGE_COUNT
 from jvn_pagination import JvnPage
 from wsgi_handler import make_like

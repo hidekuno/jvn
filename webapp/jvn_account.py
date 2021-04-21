@@ -5,8 +5,6 @@
 #
 # hidekuno@gmail.com
 #
-import os
-import hashlib
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
 from wsgi_handler import hash_passwd
