@@ -5,9 +5,7 @@
 # hidekuno@gmail.com
 #
 # Test howto
-# 1) python tests/cidr_search_test.py
-# 2) cd tests; python -m unittest cidr_search_test
-# 3) PYTHONPATH=$HOME/jvn python tests/cidr_search_test.py
+# python3 docker exec jvn_web python3 /var/www/jvn/tests/jvn_pagination_test.py
 #
 import unittest
 from pathlib import Path
@@ -15,13 +13,11 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
 from jvn_pagination import JvnPage
-from jvn_pagination import SearchModule
 from jvn_pagination import Index
 from jvn_pagination import Search
 from jvn_pagination import Next
 from jvn_pagination import Prev
 from jvn_pagination import Back
-from jvn_pagination import Maintenance
 from wsgi_handler import JvnApplication
 
 class JvnTest(JvnApplication):
@@ -79,8 +75,25 @@ class TestMethods(unittest.TestCase):
         p.set_control_page_button(["a"]*10)
         self.assertEqual(p.is_display_next, True)
 
-    def test_search_module(self):
-        se = SearchModule()
+    def test_index(self):
+        app = Index()
+        self.assertEqual(app.is_init_page(), True)
+
+    def test_search(self):
+        app = Search()
+        self.assertEqual(app.is_init_page(), True)
+
+    def test_next(self):
+        app = Next()
+        self.assertEqual(app.is_init_page(), False)
+
+    def test_prev(self):
+        app = Prev()
+        self.assertEqual(app.is_init_page(), False)
+
+    def test_back(self):
+        app = Back()
+        self.assertEqual(app.is_init_page(), False)
 
 if __name__ == '__main__':
     unittest.main()

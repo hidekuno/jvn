@@ -6,8 +6,6 @@
 #
 # Test howto
 # 1) python tests/cidr_search_test.py
-# 2) cd tests; python -m unittest cidr_search_test
-# 3) PYTHONPATH=$HOME/jvn python tests/cidr_search_test.py
 #
 import unittest
 from pathlib import Path
@@ -18,7 +16,6 @@ from jvn_model import Account
 from jvn_model import Product
 from jvn_model import Vulnerability
 from jvn_model import do_transaction
-from wsgi_handler import JvnApplication
 
 class Config(object):
     def __init__(self):
@@ -29,8 +26,8 @@ class Config(object):
 class JvnTest(object):
     def __init__(self):
         self.config = Config()
-        self.config.dic['host'] = 'localhost'
-        self.config.dic['port'] = '15432'
+        self.config.dic['host'] = 'jvn_postgres'
+        self.config.dic['port'] = '5432'
         self.config.dic['database'] = 'jvn_db'
         self.config.dic['user'] = 'jvn'
         self.config.dic['password'] = 'jvn'
@@ -162,7 +159,6 @@ class TestMethods(unittest.TestCase):
 
         t = JvnTest()
         do_transaction(db_execute, t)
-
 
     def test_account_08(self):
         row = {}
@@ -327,11 +323,61 @@ class TestMethods(unittest.TestCase):
         do_transaction(db_execute, t)
 
     def test_do_transaction(self):
+        testemail = "testtaro@gmail.com"
+
         t = JvnTest()
-        result = do_transaction(lambda db : db.query(Account).order_by(Account.user_id).all(), t)
+        result = do_transaction(lambda db : db.query(Account).filter_by(email = testemail).order_by(Account.user_id).all(), t)
         users = ['admin','guest']
         for i, r in enumerate(result):
             self.assertEqual(r.user_id, users[i])
+
+    def test_product_01(self):
+        t = JvnTest()
+        r = do_transaction(lambda db : db.query(Product).filter_by(pid = 1).first(), t)
+
+        self.assertEqual(r.pid,1)
+        self.assertEqual(r.pname,'Sun Solaris 2.5 (SPARC)')
+        self.assertEqual(r.cpe,'cpe:/o:sun:solaris:2.5::sparc')
+        self.assertEqual(r.vid,1)
+        self.assertEqual(r.fs_manage,'not_cover_item')
+        self.assertEqual(r.edit,0)
+
+    def test_jvn_vulnerability_01(self):
+
+        identifier = 'JVNDB-1998-000002'
+        description = 'Sun Solaris の ndd コマンドには、不正な TCP/IP のカーネルパラメータを設定されてしまう脆弱性が存在します。'
+
+        t = JvnTest()
+        r = do_transaction(lambda db : db.query(Vulnerability).filter_by(identifier = identifier).first(), t)
+
+        self.assertEqual(r.identifier,'JVNDB-1998-000002')
+        self.assertEqual(r.title,'Sun Solaris の ndd コマンドにおけるサービス運用妨害 (DoS) の脆弱性')
+        self.assertEqual(r.link, 'https://jvndb.jvn.jp/ja/contents/1998/JVNDB-1998-000002.html')
+        self.assertEqual(r.description,description)
+
+        self.assertEqual(r.issued_date.year,2007)
+        self.assertEqual(r.issued_date.month,4)
+        self.assertEqual(r.issued_date.day,1)
+        self.assertEqual(r.issued_date.hour,0)
+        self.assertEqual(r.issued_date.minute,0)
+        self.assertEqual(r.issued_date.second, 0)
+
+        self.assertEqual(r.modified_date.year,2007)
+        self.assertEqual(r.modified_date.month,4)
+        self.assertEqual(r.modified_date.day,1)
+        self.assertEqual(r.modified_date.hour,0)
+        self.assertEqual(r.modified_date.minute,0)
+        self.assertEqual(r.modified_date.second, 0)
+
+        self.assertEqual(r.public_date.year,1998)
+        self.assertEqual(r.public_date.month,3)
+        self.assertEqual(r.public_date.day,11)
+        self.assertEqual(r.public_date.hour,0)
+        self.assertEqual(r.public_date.minute,0)
+        self.assertEqual(r.public_date.second, 0)
+
+        self.assertEqual(r.cweid,'CWE-78')
+        self.assertEqual(r.cwetitle,'OSコマンドインジェクション')
 
 if __name__ == '__main__':
     unittest.main()
