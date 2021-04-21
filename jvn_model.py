@@ -17,7 +17,7 @@ class Account(Base):
     """アカウント情報(Model)
     """
     __tablename__ = 'jvn_account'
- 
+
     user_id    = Column(String, nullable=False, primary_key=True)
     passwd     = Column(String)
     user_name  = Column(String)
@@ -81,7 +81,10 @@ class Vulnerability(Base):
     link                 = Column(String,  nullable=False)
     description          = Column(String,  nullable=False)
     issued_date          = Column(String,  nullable=False)
-    modified_date        = Column(DateTime,  nullable=False)
+    modified_date        = Column(DateTime,nullable=False)
+    public_date          = Column(DateTime,nullable=False)
+    cweid                = Column(String)
+    cwetitle             = Column(String)
     ticket_modified_date = Column(DateTime)
 
 def do_transaction(func,app):
