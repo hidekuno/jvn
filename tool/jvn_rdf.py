@@ -53,7 +53,7 @@ def jvndb_detail(filename):
 def jvndb_detail_cwe(filename):
     elem = ElementTree.parse(open(filename)).getroot()
     for e in elem.findall(jvn_path("Vulinfo")):
-        cwe_kind = False
+
         for r in e.find(jvn_path('VulinfoData')).find(jvn_path('Related')).findall(jvn_path('RelatedItem')):
             if r.attrib['type'] == "cwe":
                 print("%s\t%s\t%s" % (e.find(jvn_path('VulinfoID')).text,
