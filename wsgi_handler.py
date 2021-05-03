@@ -7,7 +7,6 @@
 #
 
 import os.path
-import types
 import glob
 import sys
 import traceback
@@ -17,7 +16,6 @@ import configparser
 
 import psycopg2
 from paste import urlmap
-from paste.session import SessionMiddleware
 from paste.session import make_session_middleware
 from paste.request import get_cookies
 import webob
@@ -171,7 +169,7 @@ def auth_pop_user(user, passwd):
         s.user(user)
         s.pass_(passwd)
         s.quit()        
-    except Exception as e:
+    except:
         auth = False
 
     return auth
