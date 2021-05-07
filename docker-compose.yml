@@ -1,53 +1,58 @@
----
-postgres:
-  build: .
-  dockerfile: docker/database/Dockerfile
-  expose:
-    - 5432
-  ports:
-    - 15432:5432
-  restart: always
-  volumes:
-    - ./:/var/jvn
-  environment:
-    - "TZ=Japan"
-    - "LANG=ja_JP.UTF-8"
-  container_name: jvn_postgres
+version: '3'
 
-plt:
-  build: .
-  command: /usr/bin/python3 /var/local/jvn_plt_server.py
-  dockerfile: docker/plt/Dockerfile
-  expose:
-    - 8003
-  ports:
-    - 8003:8003
-  restart: always
-  links:
-    - postgres
-  volumes:
-    - ./:/var/local
-  stdin_open: true
-  privileged: true
-  environment:
-    - "TZ=JST-9"
-  container_name: jvn_plt
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/database/Dockerfile
+    expose:
+      - 5432
+    ports:
+      - 15432:5432
+    restart: always
+    volumes:
+      - ./:/var/jvn
+    environment:
+      - "TZ=Japan"
+      - "LANG=ja_JP.UTF-8"
+    container_name: jvn_postgres
 
-web:
-  build: .
-  dockerfile: docker/web/Dockerfile
-  expose:
-    - 80
-  ports:
-    - 8002:80
-  restart: always
-  links:
-    - postgres
-    - plt
-  volumes:
-    - ./:/var/www/jvn/
-  stdin_open: true
-  privileged: true
-  environment:
-    - "TZ=JST-9"
-  container_name: jvn_web
+  plt:
+    build:
+      context: .
+      dockerfile: docker/plt/Dockerfile
+    command: /usr/bin/python3 /var/local/jvn_plt_server.py
+    expose:
+      - 8003
+    ports:
+      - 8003:8003
+    restart: always
+    links:
+      - postgres
+    volumes:
+      - ./:/var/local
+    stdin_open: true
+    privileged: true
+    environment:
+      - "TZ=JST-9"
+    container_name: jvn_plt
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    expose:
+      - 80
+    ports:
+      - 8002:80
+    restart: always
+    links:
+      - postgres
+      - plt
+    volumes:
+      - ./:/var/www/jvn/
+    stdin_open: true
+    privileged: true
+    environment:
+      - "TZ=JST-9"
+    container_name: jvn_web
