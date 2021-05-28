@@ -1,4 +1,4 @@
 dist/css/* linguist-vendored
 dist/fonts/* linguist-vendored
 dist/js/* linguist-vendored
-tool/*.ipynb
+tool/*.ipynb linguist-vendored
