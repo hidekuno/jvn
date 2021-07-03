@@ -5,7 +5,7 @@ MAINTAINER hidekuno@gmail.com
 WORKDIR /var/www
 ADD docker/config/apt.conf /etc/apt/apt.conf
 
-RUN apt-get update && apt-get install -y apache2 libapache2-mod-wsgi-py3 python3-paste python3-webob python3-psycopg2 python3-jinja2 python3-sqlalchemy python3-lepl && mkdir jvn
+RUN apt-get update && apt-get install -y apache2 libapache2-mod-wsgi-py3 python3-paste python3-webob python3-psycopg2 python3-jinja2 python3-sqlalchemy python3-lepl && mkdir jvn && update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # setup app
 ADD docker/web/wsgi.conf /etc/apache2/mods-available/wsgi.conf
