@@ -50,7 +50,7 @@ services:
       - postgres
       - plt
     volumes:
-      - ./:/var/www/jvn/
+      - ./:/var/www/jvn
     stdin_open: true
     privileged: true
     environment:
