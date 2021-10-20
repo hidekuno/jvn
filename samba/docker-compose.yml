@@ -1,0 +1,35 @@
+version: '3.2'
+services:
+  samba:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ad
+    privileged: true
+    environment:
+      SAMBA_DC_REALM: hideki.local
+      SAMBA_DC_DOMAIN: KUNO-COMPANY
+      SAMBA_DC_ADMIN_PASSWD: hfxagz3ONwNz9282h2Kd
+      SAMBA_DC_DNS_BACKEND: SAMBA_INTERNAL
+    ports:
+      - 53:53
+      - 53:53/udp
+      - 88:88
+      - 88:88/udp
+      - 135:135
+      - 139:139
+      - 389:389
+      - 389:389/udp
+      - 1445:445
+      - 1464:464
+      - 1464:464/udp
+      - 636:636
+      - 3268-3269:3268-3269
+    networks:
+      default:
+        ipv4_address: 192.168.1.10
+
+networks:
+  default:
+    external:
+      name: jvn_default
