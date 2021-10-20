@@ -56,3 +56,9 @@ services:
     environment:
       - "TZ=JST-9"
     container_name: jvn_web
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
