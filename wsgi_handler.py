@@ -54,7 +54,7 @@ class JvnApplication(object):
     def save_token(self,session):
         """Set Transaction Token
         """
-        self.web_token = session[TOKEN_KEY] = hashlib.md5(str(uuid.uuid4()).encode('utf-8')).hexdigest()
+        self.web_token = session[TOKEN_KEY] = hashlib.sha256(str(uuid.uuid4()).encode('utf-8')).hexdigest()
 
     def is_token_valid(self, req, session):
         """Check Transaction Token
@@ -168,7 +168,7 @@ def auth_pop_user(user, passwd):
         s = poplib.POP3('mail.mukogawa.or.jp')
         s.user(user)
         s.pass_(passwd)
-        s.quit()        
+        s.quit()
     except:
         auth = False
 
@@ -177,7 +177,7 @@ def auth_pop_user(user, passwd):
 def hash_passwd(passwd):
     """パスワードをハッシュ化する
     """
-    return hashlib.md5((SALT + passwd).encode('utf-8')).hexdigest()
+    return hashlib.sha256((SALT + passwd).encode('utf-8')).hexdigest()
 
 def get_session_key(req):
     """セッションキーを取得する
@@ -243,7 +243,7 @@ def application(env, start_response):
     def is_application(cls):
         """アプリケーションチェック
         """
-        if ('do_logic' in cls.__dict__ 
+        if ('do_logic' in cls.__dict__
             and 'JvnApplication' in [x.__name__ for x in cls.__bases__ ]):
             return True
         else:
@@ -264,7 +264,6 @@ def application(env, start_response):
         #------ 動的にアプリケーションをローディングし、URLマップを作成する -----------
         # 例 chaing['/jvn_list/index'] = jvn_list.Index()のように動的に設定する
         sys.path.append(app_path)
-        
         chain = urlmap.URLMap(logout)
         chain['/jvn_logout'] = logout
         l = [os.path.basename(x) for x in glob.glob(os.path.join(app_path, 'jvn*.py'))]
