@@ -21,6 +21,7 @@ from paste.request import get_cookies
 import webob
 from jinja2 import Environment, FileSystemLoader
 
+import bcrypt
 import uuid
 import hashlib
 import poplib
@@ -71,12 +72,18 @@ class JvnApplication(object):
         """Check login
         """
         def select_user(db):
-            return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY], passwd = hash_passwd(req.params['jvn_passwd'])).first()
+            return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY]).first()
 
         login_ok = False
         if LOGIN_USER_KEY in req.params:
             rec = do_transaction(select_user,self)
             if rec:
+                salt = rec.passwd[:29]
+                passwd = bcrypt.hashpw(req.params['jvn_passwd'].encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
+                if rec.passwd != passwd:
+                    self.error_message   = 'アカウントIDもしくはパスワードが違います。'
+                    return login_ok
+
                 self.login_user = session[LOGIN_USER_KEY] = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
                 login_ok = True
 
@@ -174,10 +181,11 @@ def auth_pop_user(user, passwd):
 
     return auth
 
-def hash_passwd(passwd):
+def make_passwd(passwd):
     """パスワードをハッシュ化する
     """
-    return hashlib.sha256((SALT + passwd).encode('utf-8')).hexdigest()
+    salt = bcrypt.gensalt(rounds=10, prefix=b'2a')
+    return bcrypt.hashpw(passwd.encode('utf-8'), salt).decode('utf-8')
 
 def get_session_key(req):
     """セッションキーを取得する
