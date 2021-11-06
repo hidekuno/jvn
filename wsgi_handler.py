@@ -79,13 +79,14 @@ class JvnApplication(object):
             rec = do_transaction(select_user,self)
             if rec:
                 salt = rec.passwd[:29]
-                passwd = bcrypt.hashpw(req.params['jvn_passwd'].encode('utf-8'), salt.encode('utf-8')).decode('utf-8')
+                passwd = bcrypt.hashpw(req.params['jvn_passwd'].encode('utf-8'),
+                                       salt.encode('utf-8')).decode('utf-8')
                 if rec.passwd != passwd:
                     self.error_message   = 'アカウントIDもしくはパスワードが違います。'
-                    return login_ok
-
-                self.login_user = session[LOGIN_USER_KEY] = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
-                login_ok = True
+                else:
+                    self.login_user = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
+                    session[LOGIN_USER_KEY] = self.login_user
+                    login_ok = True
 
             elif True == auth_pop_user(req.params[LOGIN_USER_KEY],req.params['jvn_passwd']):
                 self.login_user = session[LOGIN_USER_KEY] = JvnUser((req.params[LOGIN_USER_KEY],))
