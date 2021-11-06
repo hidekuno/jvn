@@ -21,6 +21,7 @@ from paste.request import get_cookies
 import webob
 from jinja2 import Environment, FileSystemLoader
 
+import bcrypt
 import uuid
 import hashlib
 import poplib
@@ -54,7 +55,7 @@ class JvnApplication(object):
     def save_token(self,session):
         """Set Transaction Token
         """
-        self.web_token = session[TOKEN_KEY] = hashlib.md5(str(uuid.uuid4()).encode('utf-8')).hexdigest()
+        self.web_token = session[TOKEN_KEY] = hashlib.sha256(str(uuid.uuid4()).encode('utf-8')).hexdigest()
 
     def is_token_valid(self, req, session):
         """Check Transaction Token
@@ -71,14 +72,21 @@ class JvnApplication(object):
         """Check login
         """
         def select_user(db):
-            return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY], passwd = hash_passwd(req.params['jvn_passwd'])).first()
+            return db.query(Account).filter_by(user_id = req.params[LOGIN_USER_KEY]).first()
 
         login_ok = False
         if LOGIN_USER_KEY in req.params:
             rec = do_transaction(select_user,self)
             if rec:
-                self.login_user = session[LOGIN_USER_KEY] = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
-                login_ok = True
+                salt = rec.passwd[:29]
+                passwd = bcrypt.hashpw(req.params['jvn_passwd'].encode('utf-8'),
+                                       salt.encode('utf-8')).decode('utf-8')
+                if rec.passwd != passwd:
+                    self.error_message   = 'アカウントIDもしくはパスワードが違います。'
+                else:
+                    self.login_user = JvnUser((rec.user_id,rec.user_name,rec.email,rec.department,rec.privs))
+                    session[LOGIN_USER_KEY] = self.login_user
+                    login_ok = True
 
             elif True == auth_pop_user(req.params[LOGIN_USER_KEY],req.params['jvn_passwd']):
                 self.login_user = session[LOGIN_USER_KEY] = JvnUser((req.params[LOGIN_USER_KEY],))
@@ -168,16 +176,17 @@ def auth_pop_user(user, passwd):
         s = poplib.POP3('mail.mukogawa.or.jp')
         s.user(user)
         s.pass_(passwd)
-        s.quit()        
+        s.quit()
     except:
         auth = False
 
     return auth
 
-def hash_passwd(passwd):
+def make_passwd(passwd):
     """パスワードをハッシュ化する
     """
-    return hashlib.md5((SALT + passwd).encode('utf-8')).hexdigest()
+    salt = bcrypt.gensalt(rounds=10, prefix=b'2a')
+    return bcrypt.hashpw(passwd.encode('utf-8'), salt).decode('utf-8')
 
 def get_session_key(req):
     """セッションキーを取得する
@@ -243,7 +252,7 @@ def application(env, start_response):
     def is_application(cls):
         """アプリケーションチェック
         """
-        if ('do_logic' in cls.__dict__ 
+        if ('do_logic' in cls.__dict__
             and 'JvnApplication' in [x.__name__ for x in cls.__bases__ ]):
             return True
         else:
@@ -264,7 +273,6 @@ def application(env, start_response):
         #------ 動的にアプリケーションをローディングし、URLマップを作成する -----------
         # 例 chaing['/jvn_list/index'] = jvn_list.Index()のように動的に設定する
         sys.path.append(app_path)
-        
         chain = urlmap.URLMap(logout)
         chain['/jvn_logout'] = logout
         l = [os.path.basename(x) for x in glob.glob(os.path.join(app_path, 'jvn*.py'))]

@@ -7,7 +7,7 @@
 #
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
-from wsgi_handler import hash_passwd
+from wsgi_handler import make_passwd
 
 from jvn_model import Account
 from jvn_model import do_transaction
@@ -84,14 +84,14 @@ class Execute(JvnApplication):
 
     def do_logic(self, req, res, session):
         self.jinja_html_file = 'jvn_account.j2'
-        self.method = req.params['method'] 
+        self.method = req.params['method']
 
         #リクエストのパスワードとセッション情報のそれが同一の場合は変更しない。
         jvn = session.get(get_session_key(req))
         if req.params['passwd'] == jvn.passwd:
             hash_code = jvn.passwd
         else:
-            hash_code = hash_passwd(req.params['passwd'])
+            hash_code = make_passwd(req.params['passwd'])
 
         def do_execute(db):
             rec = Account(req.params, hash_code)

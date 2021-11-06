@@ -44,7 +44,7 @@ class Account(Base):
 
         error_message = "最大桁数をこえている項目があります。"
         if 32  < len(self.user_id):    return (False, error_message)
-        if 32  < len(self.passwd):     return (False, error_message)
+        if 64  < len(self.passwd):     return (False, error_message)
         if 255 < len(self.user_name):  return (False, error_message)
         if 255 < len(self.email):      return (False, error_message)
         if 32  < len(self.department): return (False, error_message)
