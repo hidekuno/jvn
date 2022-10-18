@@ -123,5 +123,5 @@ CREATE INDEX jvn_vulnerability_detail_idx_2 ON jvn_vulnerability_detail (cpe);
 
 truncate table jvn_account;
 insert into jvn_account values
-('admin','a7a029034754030f4b82803b61390671', 'あどみん','testtaro@gmail.com','開発部','admin'),
-('guest' ,'0ab5985f1898bf73b76f551fc010e133', 'ゆーざー','testtaro@gmail.com','開発部','user');
+('admin','$2a$10$gWXneYLpHDjD239d5z/1ceaEiW5I1R3i3ZoBRVnoQ3HkK.xRJDHWW', 'あどみん','testtaro@gmail.com','開発部','admin'),
+('guest' ,'$2a$10$WAcEDcJI5HQq8SiLj266BOoVtRF88U8/AI1nsugW3pXjnnnym433S', 'ゆーざー','testtaro@gmail.com','開発部','user');
