@@ -40,3 +40,11 @@ docker exec jvn_postgres pg_dump -v -U jvn jvn_db | gzip -c > /tmp/jvn_dump.sql.
 python /home/hideki/jvn/tool/jvn_dropbox.py  --token=${YOUR_DROPBOX_APIKEY}
 ```
 
+## 接続テストのためpsqlを構築
+```
+docker run -it --name psql --network jvn_default governmentpaas/psql
+```
+## phppgadminの構築
+```
+docker run -d --name phppgadmin --network jvn_default -p 8081:80 -e PHP_PG_ADMIN_SERVER_HOST=192.168.1.3 dockage/phppgadmin
+```
