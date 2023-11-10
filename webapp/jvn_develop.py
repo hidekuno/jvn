@@ -12,17 +12,17 @@ from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
 from wsgi_handler import fs_manage_code2ui
 
+
 class JvnDAO(object):
-    """Data Access Object
-    """
+    """Data Access Object"""
+
     def __init__(self, app):
         self.app = app
 
     def get_edit_records(self):
-
         sqlfmt = """select row_number() over(order by b.vid,b.pid) as no, a.vname, b.pname, b.cpe, b.fs_manage
                     from jvn_vendor a, jvn_product b
-                    where (a.vid = b.vid) 
+                    where (a.vid = b.vid)
                     and   (b.edit = 1)
                     order by b.vid, b.pid"""
 
@@ -30,20 +30,22 @@ class JvnDAO(object):
         rows = self.app.cursor.fetchall()
         return rows
 
+
 class JvnState(object):
-    """session data object
-    """
+    """session data object"""
+
     def __init__(self, total_count):
         self.total_count = total_count
 
+
 class Index(JvnApplication):
-    """依頼チェック表示処理
-    """
+    """依頼チェック表示処理"""
+
     def is_token_valid(self, req, session):
         return True
 
     def do_logic(self, req, res, session):
-        self.jinja_html_file = 'jvn_develop.j2'
+        self.jinja_html_file = "jvn_develop.j2"
         ui = session[get_session_key(req)] = JvnState(0)
 
         dao = JvnDAO(self)
@@ -53,32 +55,38 @@ class Index(JvnApplication):
         # 戻るボタンを非表示にする
         self.backlink = None
 
-class Update(JvnApplication):
-    """チェック処理
-    """
-    def do_logic(self, req, res, session):
 
-        self.jinja_html_file = 'jvn_develop_complete.j2'
+class Update(JvnApplication):
+    """チェック処理"""
+
+    def do_logic(self, req, res, session):
+        self.jinja_html_file = "jvn_develop_complete.j2"
 
         def do_execute(db):
             records = []
 
             i = 0
             while True:
-                vendor    = "vendor"    + str(i+1)
-                product   = "product"   + str(i+1)
-                cpe       = "cpe"       + str(i+1)
-                fs_manage = "fs_manage" + str(i+1)
-                if not cpe in req.params: break
+                vendor = "vendor" + str(i + 1)
+                product = "product" + str(i + 1)
+                cpe = "cpe" + str(i + 1)
+                fs_manage = "fs_manage" + str(i + 1)
+                if cpe not in req.params:
+                    break
 
-                rec = db.query(Product).filter_by(cpe = req.params[cpe]).first()
+                rec = db.query(Product).filter_by(cpe=req.params[cpe]).first()
                 rec.edit = 0
                 rec.fs_manage = req.params[fs_manage]
 
-                records.append((fs_manage_code2ui(req.params[fs_manage]),
-                                req.params[vendor],
-                                req.params[product],
-                                req.params[cpe]))
+                records.append(
+                    (
+                        fs_manage_code2ui(req.params[fs_manage]),
+                        req.params[vendor],
+                        req.params[product],
+                        req.params[cpe],
+                    )
+                )
                 i += 1
             return records
-        self.result = do_transaction(do_execute,self)
+
+        self.result = do_transaction(do_execute, self)

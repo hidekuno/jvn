@@ -50,7 +50,7 @@ docker run -d --name phppgadmin --network jvn_default -p 8081:80 -e PHP_PG_ADMIN
 ```
 ## pgadminの構築
 ```
-docker run --name=pgadmin -d -p 8081:80 --network jvn_default \ 
+docker run --name=pgadmin -d -p 8081:80 --network jvn_default \
   -e PGADMIN_DEFAULT_EMAIL=hoge@hoge.com \
   -e PGADMIN_DEFAULT_PASSWORD=hoge \
    dpage/pgadmin4
