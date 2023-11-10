@@ -7,6 +7,8 @@
 from selenium import webdriver
 import time
 import os
+
+
 ########################################################################
 # set_text
 ########################################################################
@@ -17,10 +19,11 @@ def set_text(obj_name, data):
 
     o[0].send_keys(data)
 
+
 ########################################################################
 # const
 ########################################################################
-DRIVER_BIN = os.path.join(os.environ['HOME'],'bin', 'chromedriver')
+DRIVER_BIN = os.path.join(os.environ["HOME"], "bin", "chromedriver")
 URL = "http://localhost:8002/"
 
 ########################################################################
@@ -30,8 +33,8 @@ driver = webdriver.Chrome(DRIVER_BIN)
 driver.get(URL)
 time.sleep(1)
 
-set_text("jvn_user","admin")
-set_text("jvn_passwd","admin")
+set_text("jvn_user", "admin")
+set_text("jvn_passwd", "admin")
 
 btn = driver.find_elements_by_id("login_btn")
 btn[0].click()
@@ -81,7 +84,7 @@ for i in range(2):
 # vulnerability summary product
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('集計結果')
+menu = driver.find_elements_by_link_text("集計結果")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_product_summary")
@@ -91,7 +94,7 @@ btn[0].click()
 # vulnerability summary vendor
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('集計結果')
+menu = driver.find_elements_by_link_text("集計結果")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_vendor_summary")
@@ -101,7 +104,7 @@ btn[0].click()
 # vulnerability summary cwe
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('集計結果')
+menu = driver.find_elements_by_link_text("集計結果")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_cwe_summary")
@@ -111,7 +114,7 @@ btn[0].click()
 # vulnerability graph bar
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('集計結果')
+menu = driver.find_elements_by_link_text("集計結果")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_barchart")
@@ -121,7 +124,7 @@ btn[0].click()
 # vulnerability graph line
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('集計結果')
+menu = driver.find_elements_by_link_text("集計結果")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_linechart")
@@ -131,7 +134,7 @@ btn[0].click()
 # vulnerability product
 ########################################################################
 time.sleep(1)
-menu = driver.find_elements_by_link_text('製品検索')
+menu = driver.find_elements_by_link_text("製品検索")
 menu[0].click()
 
 btn = driver.find_elements_by_id("jvn_search")
@@ -152,5 +155,5 @@ search_btn[0].click()
 # logout
 ########################################################################
 time.sleep(3)
-menu = driver.find_elements_by_link_text('ログアウト')
+menu = driver.find_elements_by_link_text("ログアウト")
 menu[0].click()

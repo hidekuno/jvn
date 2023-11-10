@@ -8,11 +8,12 @@
 from wsgi_handler import JvnApplication
 from jvn_delegate import JvnDelegate
 
-class Index(JvnApplication,JvnDelegate):
-    """グラフ表示(折れ線)
-    """
+
+class Index(JvnApplication, JvnDelegate):
+    """グラフ表示(折れ線)"""
+
     def is_token_valid(self, req, session):
         return True
 
     def do_logic(self, req, res, session):
-        self.do_chart('linechart',req, session)
+        self.do_chart("linechart", req, session)
