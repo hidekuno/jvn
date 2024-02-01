@@ -15,6 +15,7 @@ services:
     environment:
       - "TZ=Japan"
       - "LANG=ja_JP.UTF-8"
+      - "POSTGRES_PASSWORD=hogehoge"
     container_name: jvn_postgres
 
   plt:
