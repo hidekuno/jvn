@@ -80,7 +80,7 @@ class JvnAPI(object):
     @log
     def download(self):
         """Jvnからレスポンスををダウンロードする"""
-        for s in range(1, self.max_count, self.page_count):
+        for s in range(self.jvn.getStartItem(), self.max_count, self.page_count):
             param = "&".join(
                 [
                     "startItem" + "=" + str(s),
@@ -118,10 +118,14 @@ class JvnAPI(object):
 class JvnVendor(object):
     """ベンダ情報ファイルのデータ処理"""
 
-    def __init__(self):
+    def __init__(self, startid):
         self.vender_fd = codecs.open(
             os.path.join(TMP_DIR, "jvn_vendor_work.csv"), "w", "utf-8"
         )
+        self.startid = startid
+
+    def getStartItem(self):
+        return self.startid
 
     def get_method(self):
         return "method=getVendorList"
@@ -140,10 +144,14 @@ class JvnVendor(object):
 class JvnProduct(object):
     """製品情報ファイルのデータ処理"""
 
-    def __init__(self):
+    def __init__(self, startid):
         self.product_fd = codecs.open(
             os.path.join(TMP_DIR, "jvn_product_work.csv"), "w", "utf-8"
         )
+        self.startid = startid
+
+    def getStartItem(self):
+        return self.startid
 
     def get_method(self):
         return "method=getProductList"
@@ -181,6 +189,9 @@ class JvnVulnerability(object):
         self.vd_fd = codecs.open(
             os.path.join(TMP_DIR, "jvn_vulnerability_detail_work.csv"), "w", "utf-8"
         )
+
+    def getStartItem(self):
+        return 1
 
     def get_method(self):
         params = [
@@ -233,6 +244,9 @@ class JvnVulnDetailInfo(object):
         self.dao = dao
         self.dao.cursor.execute("truncate table jvn_mainte_work")
         self.dao.cursor.execute("truncate table jvn_cwe_work")
+
+    def getStartItem(self):
+        return 1
 
     def get_method(self):
         params = ["method=getVulnDetailInfo", "vulnId=" + "+".join(self.vulner)]
@@ -467,6 +481,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--month", action="store_true", dest="month")
     parser.add_argument("-y", "--year", type=int, dest="fiscal_year")
+    parser.add_argument("-v", "--vendor-startid", type=int, dest="vendor_startid", default=1)
+    parser.add_argument("-p", "--product-startid", type=int, dest="product_startid", default=1)
     args = parser.parse_args(sys.argv[1:])
 
     try:
@@ -482,8 +498,8 @@ if __name__ == "__main__":
         date_range = "m" if args.month is True else "w"
         # 製品情報,JVN脆弱性情報の取り込み
         jvns = [
-            JvnAPI(JvnVendor(), config),
-            JvnAPI(JvnProduct(), config),
+            JvnAPI(JvnVendor(args.vendor_startid), config),
+            JvnAPI(JvnProduct(args.product_startid), config),
             JvnAPI(JvnVulnerability(date_range), config, page_count=50),
         ]
 
