@@ -18,6 +18,7 @@ from xml.etree import ElementTree
 import codecs
 import configparser
 import argparse
+import time
 
 import ssl
 
@@ -73,6 +74,8 @@ class JvnAPI(object):
         self.max_count = int(config.get("api", "max_count"))
         self.page_count = int(config.get("api", "page_count"))
         self.jvn_url = config.get("api", "url")
+        self.delay = float(config.get("api", "delay"))
+        self.timeout = int(config.get("api", "timeout"))
 
         if page_count is not None:
             self.page_count = page_count
@@ -91,7 +94,7 @@ class JvnAPI(object):
             url = self.jvn_url + self.jvn.get_method() + "&" + param
             logging.debug("URL = " + url)
 
-            root = ElementTree.parse(urllib.request.urlopen(url)).getroot()
+            root = ElementTree.parse(urllib.request.urlopen(url,timeout=self.timeout)).getroot()
             status = root.find(myjvn_path("Status", "Status"))
 
             if not status.get("retCd") == "0":
@@ -109,6 +112,8 @@ class JvnAPI(object):
 
             if (check_count[1] + check_count[2]) > check_count[0]:
                 break
+
+            time.sleep(self.delay)
 
     def release(self):
         """クローズ"""
@@ -538,6 +543,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
     except Exception as e:
-        traceback.print_exc()
+        # output same as traceback.print_exc()
         logging.error(str(e) + "\n" + traceback.format_exc())
         sys.exit(1)
