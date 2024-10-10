@@ -66,10 +66,10 @@ def jvndb_detail_related(filename, proc):
         ):
             proc(r,e)
 
-def jvndb_detail_nvd(filename):
+def jvndb_detail_cve(filename):
     def _proc(r,e):
         if (r.attrib["type"] == "advisory" and
-            r.find(jvn_path("Name")).text == "National Vulnerability Database (NVD)"):
+            r.find(jvn_path("Name")).text == "Common Vulnerabilities and Exposures (CVE)"):
             print(
                 "%s\t%s\t%s"
                 % (
@@ -118,9 +118,8 @@ def jvndb_detail_nocwe(filename):
 
 #for y in range(1991, 2025):
 #    f = f"jvndb_detail_{y}.rdf"
-#    jvndb_detail_nvd(f)
+#    jvndb_detail_cve(f)
 
-y = 2024
-f = f"jvndb_detail_{y}.rdf"
-jvndb_detail_nvd(f)
-
+#y = 1989
+#f = f"jvndb_detail_{y}.rdf"
+#jvndb_detail_cve(f)

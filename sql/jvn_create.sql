@@ -18,8 +18,8 @@ DROP TABLE IF EXISTS jvn_vulnerability_detail_work;
 DROP TABLE IF EXISTS jvn_account;
 DROP TABLE IF EXISTS jvn_mainte_work;
 DROP TABLE IF EXISTS jvn_cwe_work;
-DROP TABLE IF EXISTS jvn_nvd;
-DROP TABLE IF EXISTS jvn_nvd_work;
+DROP TABLE IF EXISTS jvn_cve;
+DROP TABLE IF EXISTS jvn_cve_work;
 
 DROP INDEX IF EXISTS jvn_vendor_idx_1;
 DROP INDEX IF EXISTS jvn_product_idx_1;
@@ -104,15 +104,15 @@ CREATE TABLE jvn_cwe_work (
   cwetitle      text
 );
 -- --------------------- NVD脆弱性情報 --------
-CREATE TABLE jvn_nvd (
+CREATE TABLE jvn_cve (
   identifier    varchar(32),
-  cve           varchar(16),
+  cveid         varchar(16),
   url           text
 );
 -- --------------------- NVD脆弱性情報(ワークテーブル) --------
-CREATE TABLE jvn_nvd_work (
+CREATE TABLE jvn_cve_work (
   identifier    varchar(32),
-  cve           varchar(16),
+  cveid         varchar(16),
   url           text
 );
 -- --------------------- アカウント情報 --------------------
