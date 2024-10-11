@@ -47,6 +47,12 @@
 	{% if app.exception is none %}
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+            <li style="margin-right: 100px;">
+              <div>
+                <input type="search" name="cve_txt" id="cve_txt" style="width: 150px; height: 20px;display:inline-block;" class="form-control" placeholder="CVE番号"/>
+                <a id="jvn_cve" class="navbar-brand jvn_menu_btn" href="#"><span class="glyphicon glyphicon-search"></span></a>
+              </div>
+            </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle jvn_menu_item" data-toggle="dropdown"><span class="glyphicon glyphicon-filter"></span>集計結果<b class="caret"></b></a>
               <ul class="dropdown-menu jvn-dropdown-menu">
@@ -89,4 +95,5 @@
     </div>
     <form id="headerForm" method="post">
         <input type="hidden" id="topuri" value="{{app.topuri}}" />
+        <input type="hidden" name="cveid" id="cve_hidden" value="" />
     </form>
