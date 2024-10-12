@@ -1,6 +1,6 @@
 //
 // JVN Vulnerability Infomation Managed System
-// 
+//
 // hidekuno@gmail.com
 //
 
@@ -8,7 +8,7 @@
 // チェックボックス制御
 //====================================================================
 $('#header_check').on('click', function() {
-     $('.rec').prop('checked', $('#header_check').prop('checked')); 
+     $('.rec').prop('checked', $('#header_check').prop('checked'));
 });
 
 var change_undefine = function(status) {
@@ -100,7 +100,7 @@ function checkDate( str ) {
 //====================================================================
 // 脆弱性情報確認画面　全選択
 //====================================================================
-$('#vul_search_btn').click(function() { 
+$('#vul_search_btn').click(function() {
     if (false == checkDate($('#dp_from').val())) {
         bootbox.alert('YYYY-MM-DD HH:MI:SS形式で入力してください。', function(result) {});
         return false;
@@ -115,36 +115,41 @@ $('#vul_search_btn').click(function() {
 // JVN 脆弱性情報一覧からの画面遷移をPostで行うようにする
 //====================================================================
 $('.jvn_list_product_button').click (
-  function() {
-    $('#listForm').attr('action', $('#topuri').val() + '/jvn_operation/index');
-    $('#identifier').val($(this).attr('id'));
-    $('#listForm').submit();
-  }
+    function() {
+        $('#listForm').attr('action', $('#topuri').val() + '/jvn_operation/index');
+        $('#identifier').val($(this).attr('id'));
+        $('#listForm').submit();
+    }
 );
 $('.jvn_list_ticket_button').click (
-  function() {
-    $('#listForm').attr('action', $('#topuri').val() + '/jvn_ticket/index');
-    $('#identifier').val($(this).attr('id'));
-    $('#listForm').submit();
-  }
+    function() {
+        $('#listForm').attr('action', $('#topuri').val() + '/jvn_ticket/index');
+        $('#identifier').val($(this).attr('id'));
+        $('#listForm').submit();
+    }
 );
 //====================================================================
 // JVN アカウント情報一覧からの画面遷移をPostで行うようにする
 //====================================================================
 $('.jvn_list_account_button').click (
-  function() {
-    $('#user_id').val($(this).attr('id'));
-    $('#accoutForm').submit();
-  }
+    function() {
+        $('#user_id').val($(this).attr('id'));
+        $('#accoutForm').submit();
+    }
 );
 //====================================================================
 // メニューボタンクリック(jvn_menu_btn)
 //====================================================================
 $(".jvn_menu_btn").each( function(i) {
-
     var appname = $(this).attr("id");
     $('a#' + appname).click(
         function() {
+            var cve = $("#cve_txt").val();
+            if (appname == "jvn_cve" && !cve.match(/^CVE-[0-9][0-9][0-9][0-9]-/)) {
+                bootbox.alert('CVE番号の形式で入力してください。', function(result) {});
+                return false;
+            }
+            $('#cve_hidden').val(cve);
             $('#headerForm').attr('action', $('#topuri').val() + '/' + appname + '/index');
             $('#headerForm').submit();
         }

@@ -249,6 +249,7 @@ class JvnVulnDetailInfo(object):
         self.dao = dao
         self.dao.cursor.execute("truncate table jvn_mainte_work")
         self.dao.cursor.execute("truncate table jvn_cwe_work")
+        self.dao.cursor.execute("truncate table jvn_cve_work")
 
     def getStartItem(self):
         return 1
@@ -263,6 +264,7 @@ class JvnVulnDetailInfo(object):
 
         work = []
         work_cwe = []
+        work_cve = []
         for e in root.findall(jvn_path("Vulinfo")):
             work.append(
                 [
@@ -283,9 +285,18 @@ class JvnVulnDetailInfo(object):
                             r.find(jvn_path("Title")).text,
                         ]
                     )
-
+                if (r.attrib["type"] == "advisory" and
+                    r.find(jvn_path("Name")).text == "Common Vulnerabilities and Exposures (CVE)"):
+                    work_cve.append(
+                        [
+                            e.find(jvn_path("VulinfoID")).text,
+                            r.find(jvn_path("VulinfoID")).text,
+                            r.find(jvn_path("URL")).text,
+                        ]
+                    )
         self.dao.insert_mainte_work(work)
         self.dao.insert_cwe_work(work_cwe)
+        self.dao.insert_cve_work(work_cve)
 
     def core_proc(self):
         """mainから呼ばれる処理"""
@@ -303,6 +314,7 @@ class JvnVulnDetailInfo(object):
                 del params[:]
         self.dao.update_public_date()
         self.dao.update_cwe()
+        self.dao.insert_cve()
 
     def release(self):
         pass
@@ -428,6 +440,15 @@ class RegisterDAO(object):
             self.cursor.execute(sql, tuple(row))
         logging.info(str(len(rows)) + " cwe counts")
 
+    def insert_cve_work(self, rows):
+        """CVEテーブルへ登録"""
+        sql = (
+            "insert into jvn_cve_work(identifier, cveid, url) values (%s, %s, %s)"
+        )
+        for row in rows:
+            self.cursor.execute(sql, tuple(row))
+        logging.info(str(len(rows)) + " cve counts")
+
     def update_public_date(self):
         """発見日を登録"""
         sql = """update jvn_vulnerability a
@@ -446,6 +467,12 @@ class RegisterDAO(object):
         self.cursor.execute(sql)
         self.connection.commit()
 
+    def insert_cve(self):
+        """CVEテーブルへ登録"""
+        sql = """insert into jvn_cve select * from jvn_cve_work where not exists
+              (select 1 from jvn_cve a where jvn_cve_work.identifier = a.identifier and jvn_cve_work.cveid = a.cveid)"""
+        self.cursor.execute(sql)
+        self.connection.commit()
 
 def init_logger():
     """ログ初期化"""
