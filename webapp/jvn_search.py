@@ -102,7 +102,7 @@ class ProductListLogic(jvn_pagination.SearchModule):
     def make_ui(self, req, session):
         # sessionとrequestのマージ処理
         self.ui = session.get(self.pager_app)
-        if (self.ui is None) or ("vendor" in req.params) or (os.path.basename(req.path_qs) == "index"):
+        if (not self.ui) or ("vendor" in req.params) or (os.path.basename(req.path_qs) == "index"):
             self.ui = session[self.pager_app] = JvnState()
 
         # Requestデータを優先して処理する

@@ -80,7 +80,7 @@ class TitleListLogic(jvn_pagination.SearchModule):
 
     def make_ui(self, req, session):
         self.ui = session.get(self.pager_app)
-        if self.ui is None:
+        if not self.ui:
             self.ui = session[self.pager_app] = JvnState()
 
 

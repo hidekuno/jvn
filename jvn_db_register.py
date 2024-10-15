@@ -77,7 +77,7 @@ class JvnAPI(object):
         self.delay = float(config.get("api", "delay"))
         self.timeout = int(config.get("api", "timeout"))
 
-        if page_count is not None:
+        if page_count:
             self.page_count = page_count
 
     @log
@@ -527,7 +527,7 @@ if __name__ == "__main__":
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "jvn.conf")
         )
 
-        date_range = "m" if args.month is True else "w"
+        date_range = "m" if args.month else "w"
         # 製品情報,JVN脆弱性情報の取り込み
         jvns = [
             JvnAPI(JvnVendor(args.vendor_startid), config),
