@@ -110,7 +110,7 @@ class ListLogic(jvn_pagination.SearchModule):
 
     def make_ui(self, req, session):
         self.ui = session.get(self.pager_app)
-        if (self.ui is None) or ("dp_from" in req.params) or (os.path.basename(req.path_qs) == "index"):
+        if (not self.ui) or ("dp_from" in req.params) or (os.path.basename(req.path_qs) == "index"):
             self.ui = session[self.pager_app] = JvnState()
 
         # UIより入力

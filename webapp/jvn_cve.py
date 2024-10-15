@@ -7,6 +7,7 @@
 #
 from wsgi_handler import JvnApplication
 from wsgi_handler import get_session_key
+import re
 
 
 class JvnDAO(object):
@@ -37,6 +38,13 @@ class Index(JvnApplication):
     """初期表示処理"""
 
     def is_token_valid(self, req, session):
+        return True
+
+    def is_input_data_valid(self, req, session):
+        if not req.params["cveid"]:
+            return False
+        if not re.match(r'^CVE-(\d){4}-\d', req.params["cveid"]):
+            return False
         return True
 
     def do_logic(self, req, res, session):

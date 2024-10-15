@@ -69,6 +69,10 @@ class JvnApplication(object):
 
         return req.params[TOKEN_KEY] == session[TOKEN_KEY]
 
+    def is_input_data_valid(self, req, session):
+        """Check Input data"""
+        return True
+
     def check_login(self, req, session):
         """Check login"""
 
@@ -137,10 +141,14 @@ class JvnApplication(object):
             self.cursor = connection.cursor()
 
             # 認証チェックを行う。失敗した場合はログイン画面を表示する。
-            if True is self.check_login(req, session):
-                if False is self.is_token_valid(req, session):
-                    raise Exception("不正操作です。")
+            if self.check_login(req, session):
+                if not self.is_token_valid(req, session):
+                    raise Exception("不正操作です。\nブラウザの戻るボタン等を使用しないでください。")
                 self.save_token(session)
+
+                if not self.is_input_data_valid(req, session):
+                    raise Exception("入力データに誤りがあります。\nフロントエンドでバリデーションを実装してください。")
+
                 self.do_logic(req, res, session)
             else:
                 self.jinja_html_file = "jvn_login.j2"
@@ -155,11 +163,11 @@ class JvnApplication(object):
 
             logging.error(self.exception)
             logging.error(self.trace)
-            if connection is not None:
+            if connection:
                 connection.rollback()
 
         finally:
-            if connection is not None:
+            if connection:
                 connection.close()
 
         set_response(res, self.jinja_html_file, self)

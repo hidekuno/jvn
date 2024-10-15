@@ -112,7 +112,7 @@ class Execute(JvnApplication):
         def do_execute(db):
             rec = Account(req.params, hash_code)
             ret, self.error_message = rec.validate(db, self.method)
-            if ret is False:
+            if not ret:
                 self.jinja_html_file = "jvn_account_edit.j2"
                 self.ui = rec
                 setPrivs(self, rec.privs)
